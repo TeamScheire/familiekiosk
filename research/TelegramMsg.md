@@ -5,4 +5,6 @@ messages naar de Arduino om zaken te doen.
 
 Wij hebben nodig: telegram berichten opvolgen, is er geluid bij --> toelaten dat dat afgespeeld wordt. 
 
-Onze ervaring is met python, dus kijken we naar een python api
+Onze ervaring is met python, dus kijken we naar een python api: https://python-telegram-bot.org/ 
+
+Kunnen we hiermee geluidsfragmenten herkennen en dan afspelen via hdmi ?
