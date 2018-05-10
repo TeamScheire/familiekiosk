@@ -1,0 +1,50 @@
+<script async src="https://www.publicalbum.org/js/pa-ins.min.js"></script>
+<ins class="pa-widget-gallery" style="width:100%;height:480px;"
+    data-url="https://photos.app.goo.gl/mWAUpLGKXjlocpcz1"
+    data-uid="3085f2324607123795c65f3e504ba9cd484c09cf84fe3d43c887bcd7bf729b88"
+    data-delay="20"
+    data-repeat="true"
+></ins>
+<script>
+//document.getElementsByClassName("jx-svg-control")[1].click();
+//document.getElementById('g').click();
+  // ==UserScript==
+// @name        google photos slower slideshow
+// @namespace   piframe
+// @include     https://photos.google.com/album/*
+// @version     1
+// @grant       none
+// ==/UserScript==
+
+// CHANGE first_photo TO USE THE URL OF THE FIRST PHOTO IN YOUR ALBUM
+var first_photo = 'https://photos.google.com/share/AF1QipMKJMp3dA-tkqcflBwUbWGZmUqKs3OcIsOStOEKL0QuMFMISdLK2LpRth_vuT07BQ/photo/AF1QipPBwCEMbO6xgt5O0J6bhRHocfdRgzD5OZXTXrBq?key=YVg4T1V2cXB2LVNLVTRfYnQ0SDVJR2lXSlF4RXV3';
+function pressKey() {
+  var key = 39; // right arrow keycode
+  var body = document.getElementsByTagName('body')[0];
+  console.log(body);
+  if(document.createEventObject) {
+    var eventObj = document.createEventObject();
+    eventObj.keyCode = key;
+    body.fireEvent("onkeydown", eventObj);
+  } else if (document.createEvent) {
+    var eventObj = document.createEvent("Events");
+    eventObj.initEvent("keydown", true, true);
+    eventObj.which = key;
+    body.dispatchEvent(eventObj);
+  }
+}
+function next_or_prev() {
+  var test = document.getElementsByTagName('iframe')[0];
+  console.log(test);
+  var current_url = window.location.href;
+  pressKey();
+  //if (current_url == window.location.href) {
+  //  // page didnt change, must be at last photo
+  //  // load the first photo
+  //  window.location.href = first_photo;
+  //}
+}
+window.setInterval(function(){next_or_prev()}, 5000);
+
+
+</script>
