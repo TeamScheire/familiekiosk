@@ -24,7 +24,7 @@ import logging
 TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
 #email of photoframe
-EMAIL_FRAME = "YOUT_PIXSTAR_EMAIL@mypixstar.com"
+EMAIL_FRAME = "YOUR_PIXSTAR_EMAIL@mypixstar.com"
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
