@@ -97,6 +97,9 @@ class PictureExtended(Picture):
     def download(self):
         new_file = self.PhotoSize_object.bot.get_file(self.PhotoSize_object.file_id)
         new_file.download(self.file_path)
+        # after saving a file, we need to store some META info also
+        meta_info_filename = self.file_path + '_meta.txt'
+        #TODO: store username, first name and last name so we can reply on button push
 
     def send(self):
         with open(self.compressed_file_path, 'rb') as file:

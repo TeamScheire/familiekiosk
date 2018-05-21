@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import division, print_function
@@ -65,10 +66,14 @@ class TVbox():
 
     def showimage(self):
         if self.currentimage != self.showimagenr:
+            # we regenerate list of images to have latest present
+            self.listimages()
+            # now show the next image
             self.showimagenr = self.showimagenr % len(self.list_of_img)
             self.showPIL(self.list_of_img[self.showimagenr])
             self.timeshowimage = time.time()
             self.currentimage = self.showimagenr
+            
 
     def showPIL(self, image_file):
         pilImage = Image.open(image_file)
