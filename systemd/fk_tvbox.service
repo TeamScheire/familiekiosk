@@ -1,0 +1,13 @@
+[Unit]
+ Description=Telegram Maria Bot
+ After=multi-user.target
+
+[Service]
+ Type=idle
+ Environment="DISPLAY=:0"
+ Environment="XAUTHORITY=/home/pi/.Xauthority"
+ ExecStart=/usr/bin/python /home/pi/familiekiosk/src/FK_TVbox.py > /home/pi/familiekiosk/output_TVbox.log 2>&1
+
+[Install]
+ WantedBy=multi-user.target
+ WantedBy=graphical.target
