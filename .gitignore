@@ -1,0 +1,5 @@
+*.pyc
+.spyderproject
+.directory
+src/pics/*jpg
+
