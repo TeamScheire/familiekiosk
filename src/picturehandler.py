@@ -6,6 +6,7 @@
 import os
 import sys
 import logging
+import datetime
 from telegram.ext import MessageHandler
 from telegram.ext import CommandHandler
 from telegram.ext import Filters
@@ -37,17 +38,33 @@ def set_email(email):
 def get_email():
     return EMAIL
 
-def send_mail(ImgFileName):
+def send_mail(ImgFileName, message=None):
     """Sending a mail with an image from python
         Adapted from https://stackoverflow.com/questions/13070038/attachment-image-to-send-by-mail-using-python
     """
     img_data = open(ImgFileName, 'rb').read()
     msg = MIMEMultipart()
-    msg['Subject'] = 'Telegram photo received'
+    if message:
+         msg['Subject'] = "Foto van {} {} - Datum: {}".format(
+                message.from_user.first_name,
+                message.from_user.last_name,
+                message.date.strftime('%Y-%m-%d %H:%M:%S')
+                            )
+    else:
+         msg['Subject'] = "Nieuw ontvangen foto via Telegram"
     msg['From'] = UserName
     msg['To'] = get_email()
+    
+    #logger.info(message)
 
-    text = MIMEText("Nieuw ontvangen foto via Telegram")
+    if message:
+        text = MIMEText("Foto van {} {} - Datum: {}".format(
+                message.from_user.first_name,
+                message.from_user.last_name,
+                message.date.strftime('%Y-%m-%d %H:%M:%S')
+                            ))
+    else:
+        text = MIMEText("Nieuw ontvangen foto via Telegram")
     msg.attach(text)
     image = MIMEImage(img_data, name=os.path.basename(ImgFileName))
     msg.attach(image)
@@ -71,6 +88,8 @@ class PictureExtended(Picture):
 
         self.chat_id = message.chat_id
         self.message_id = message.message_id
+        self.from_user = message.from_user # user that send the picture
+        self.date = message.date # date in Unix time
         self.file_path = BASE_FILE_PATH.format(self.chat_id, self.message_id)
         self.message = message
         Picture.__init__(self, self.file_path, quality=quality)
@@ -84,7 +103,7 @@ class PictureExtended(Picture):
             #we reply in telegram with the photo as feedback
             self.message.reply_photo(file, reply_to_message_id=self.reply_to_message_id)
             #we send to photo frame email
-        send_mail(self.compressed_file_path)
+        send_mail(self.compressed_file_path, self.message)
 
     def download_send2frame(self):
         self.download()
