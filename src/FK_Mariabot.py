@@ -20,12 +20,20 @@ bot.
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
 
+# the token of your bot obtained from Telegram
+TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+
+#email of photoframe
+EMAIL_FRAME = "YOUT_PIXSTAR_EMAIL@mypixstar.com"
+
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
+import picturehandler
+picturehandler.set_email(EMAIL_FRAME)
 
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
@@ -52,7 +60,7 @@ def error(bot, update, error):
 def main():
     """Start the bot."""
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("TOKEN")
+    updater = Updater(TOKEN)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -61,8 +69,11 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
 
-    # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    # For testing: on noncommand i.e message - echo the message on Telegram
+#    dp.add_handler(MessageHandler(Filters.text, echo))
+
+    # we react on receiving a picture
+    dp.add_handler(MessageHandler(Filters.photo, picturehandler.on_photo_received))
 
     # log all errors
     dp.add_error_handler(error)
