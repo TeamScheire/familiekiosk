@@ -29,8 +29,8 @@ class TVbox():
         self.root = tkinter.Tk()
         #set no border
         self.root.config(highlightthickness=0)
-        self.label = tkinter.Label(text="Foto van ...")
-        self.label.pack()
+        self.label = tkinter.Label(text="Foto van ...", font=("Courier", 44))
+        self.label.pack(fill=tkinter.X)
         
         self.w, self.h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
         self.root.bind('<Escape>', self.closefullscreen)
