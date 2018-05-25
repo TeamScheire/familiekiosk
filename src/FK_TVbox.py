@@ -27,6 +27,8 @@ class TVbox():
         self.timeshowimage = time.time()
         
         self.root = tkinter.Tk()
+        #set no border
+        self.root.config(highlightthickness=0)
         self.label = tkinter.Label(text="Foto van ...")
         self.label.pack()
         
@@ -37,11 +39,12 @@ class TVbox():
         self.root.bind('<Return>', self.closefullscreen)
         self.root.bind("<ButtonPress-1>", self.closefullscreen)
         self.root.overrideredirect(True)
-        self.root.geometry("%dx%d+0+0" % (self.w+1, self.h+1))
+        self.root.geometry("%dx%d+0+0" % (self.w, self.h))
         self.root.resizable(False, False)
         self.root.update_idletasks()
-        self.root.focus_set()    
-        self.canvas = tkinter.Canvas(self.root, width=self.w, height=self.h, bg="black")
+        self.root.focus_set()
+        self.canvas = tkinter.Canvas(self.root, width=self.w, height=self.h, bg="black",
+                                     highlightthickness=0)
         #canvas.configure(background='black')
         #canvas.bind("<Escape>", closefullscreen)
         #canvas.bind("<Return>", closefullscreen)
@@ -69,8 +72,12 @@ class TVbox():
             # we regenerate list of images to have latest present
             self.listimages()
             # now show the next image
-            self.showimagenr = self.showimagenr % len(self.list_of_img)
-            self.showPIL(self.list_of_img[self.showimagenr])
+            if len(self.list_of_img) == 0 :
+                #no images yet, show dummy
+                self.showPIL(os.path.join(BASE_FILE_PATH, 'dummy', 'dummy.jpg'))
+            else:
+                self.showimagenr = self.showimagenr % len(self.list_of_img)
+                self.showPIL(self.list_of_img[self.showimagenr])
             self.timeshowimage = time.time()
             self.currentimage = self.showimagenr
             
