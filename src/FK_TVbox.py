@@ -33,17 +33,22 @@ class TVbox():
         self.label.pack()
         
         self.w, self.h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
-        # no window decoration to close the window! 
-        #frame = tkinter.Frame(self.root)
         self.root.bind('<Escape>', self.closefullscreen)
         self.root.bind('<Return>', self.closefullscreen)
         self.root.bind("<ButtonPress-1>", self.closefullscreen)
         self.root.overrideredirect(True)
+        # no window decoration to close the window! 
         self.root.geometry("%dx%d+0+0" % (self.w, self.h))
         self.root.resizable(False, False)
         self.root.update_idletasks()
         self.root.focus_set()
-        self.canvas = tkinter.Canvas(self.root, width=self.w, height=self.h, bg="black",
+        
+        #update Tk to be able to querry label size
+        self.root.update()
+        self.w_label, self.h_label = self.label.winfo_width(), self.label.winfo_height()
+        
+        # add a canvas
+        self.canvas = tkinter.Canvas(self.root, width=self.w, height=self.h-self.h_label, bg="black",
                                      highlightthickness=0)
         #canvas.configure(background='black')
         #canvas.bind("<Escape>", closefullscreen)
@@ -85,14 +90,14 @@ class TVbox():
     def showPIL(self, image_file):
         pilImage = Image.open(image_file)
         imgWidth, imgHeight = pilImage.size
-        print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h)
-        if imgWidth > self.w or imgHeight > self.h:
-            ratio = min(self.w/imgWidth, self.h/imgHeight)
-            imgWidth = int(imgWidth*ratio)
-            imgHeight = int(imgHeight*ratio)
-            pilImage = pilImage.resize((imgWidth, imgHeight), Image.ANTIALIAS)
+        print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
+        # too large or too small, scale to fit the frame
+        ratio = min(self.w/imgWidth, (self.h-self.h_label)/imgHeight)
+        imgWidth = int(imgWidth*ratio)
+        imgHeight = int(imgHeight*ratio)
+        pilImage = pilImage.resize((imgWidth, imgHeight), Image.ANTIALIAS)
         self.image = ImageTk.PhotoImage(pilImage)
-        imagesprite = self.canvas.create_image(self.w/2, self.h/2, image=self.image)
+        imagesprite = self.canvas.create_image(self.w/2, (self.h-self.h_label)/2, image=self.image)
 
     def update_label(self):
         """
