@@ -34,8 +34,9 @@ class TVbox():
         self.timeshowimage = time.time()
         
         self.root = tkinter.Tk()
+        #self.root.attributes('-fullscreen', True)
         #set no border
-        self.root.config(highlightthickness=0)
+        self.root.config(highlightthickness=0, cursor='none')
         self.label = tkinter.Label(text="Foto van ...", font=("Courier", 44))
         self.label.pack(fill=tkinter.X)
         
