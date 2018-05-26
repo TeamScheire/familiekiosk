@@ -31,6 +31,8 @@ class TVbox():
     def __init__(self):
         self.currentimage = -1
         self.showimagenr = 0
+        self.len_list = 0
+        self.list_of_img = []
         self.timeshowimage = time.time()
         
         self.root = tkinter.Tk()
@@ -77,6 +79,10 @@ class TVbox():
         """
         list_of_files = sorted( glob.iglob(IMAGES), key=os.path.getctime, reverse=True)
         list_of_files = [x for x in list_of_files if x[-9:] != "_comp.jpg"]
+        if self.len_list != len(list_of_files):
+            #new image arrived, show it
+            self.showimagenr = 0
+        self.len_list = len(list_of_files)
         self.list_of_img = list_of_files[:MAX_JPG]
         print (self.list_of_img)
 
