@@ -115,6 +115,7 @@ class PictureExtended(Picture):
         meta.set('user', 'first_name', self.message.from_user.first_name)
         meta.set('user', 'last_name', self.message.from_user.last_name)
         meta.set('user', 'username', self.message.from_user.username)
+        meta.set('user', 'id', self.message.from_user.id)
         meta.add_section('message')
         meta.set('message', 'day', self.message.date.strftime('%Y-%m-%d'))
         meta.set('message', 'hour', self.message.date.strftime('%H:%M:%S'))

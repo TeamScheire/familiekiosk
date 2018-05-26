@@ -9,6 +9,13 @@ if sys.version_info[0] == 2:  # the tkinter library changed it's name from Pytho
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
 else:
     import tkinter
+
+if sys.version_info[0] == 2:  # the configparser library changed it's name from Python 2 to 3.
+    import ConfigParser
+    configparser = ConfigParser
+else:
+    import configparser
+
 from PIL import Image, ImageTk
 import time
 import glob
@@ -80,12 +87,23 @@ class TVbox():
             if len(self.list_of_img) == 0 :
                 #no images yet, show dummy
                 self.showPIL(os.path.join(BASE_FILE_PATH, 'dummy', 'dummy.jpg'))
+                meta_filename = None
             else:
                 self.showimagenr = self.showimagenr % len(self.list_of_img)
                 self.showPIL(self.list_of_img[self.showimagenr])
+                meta_filename = self.list_of_img[self.showimagenr] + '_meta.cfg'
             self.timeshowimage = time.time()
             self.currentimage = self.showimagenr
-            
+            #obtain meta information if present
+            if meta_filename and os.path.isfile(meta_filename):
+                config = ConfigParser.RawConfigParser()
+                config.read(meta_filename)
+                self.img_user = "{} {}".format(config.get("user", "first_name"),
+                                           config.get("user", "last_name"))
+                self.img_day = config.get("message", "day")
+            else:
+                self.img_user = ''
+                self.img_day = ''
 
     def showPIL(self, image_file):
         pilImage = Image.open(image_file)
@@ -104,7 +122,8 @@ class TVbox():
         Scheduled function running every second
         """
         now = time.strftime("%H:%M:%S")
-        self.label.configure(text=now)
+        txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
+        self.label.configure(text=txt)
         # update image if needed
         if (time.time() > self.timeshowimage + SHOW_JPG_SEC):
             self.showimagenr += 1
