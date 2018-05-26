@@ -7,6 +7,13 @@ import os
 import sys
 import logging
 import datetime
+
+if sys.version_info[0] == 2:  # the configparser library changed it's name from Python 2 to 3.
+    import ConfigParser
+    configparser = ConfigParser
+else:
+    import configparser
+    
 from telegram.ext import MessageHandler
 from telegram.ext import CommandHandler
 from telegram.ext import Filters
@@ -98,8 +105,29 @@ class PictureExtended(Picture):
         new_file = self.PhotoSize_object.bot.get_file(self.PhotoSize_object.file_id)
         new_file.download(self.file_path)
         # after saving a file, we need to store some META info also
-        meta_info_filename = self.file_path + '_meta.txt'
-        #TODO: store username, first name and last name so we can reply on button push
+        meta_info_filename = self.file_path + '_meta.cfg'
+        
+        meta = configparser.RawConfigParser()
+        
+        # When adding sections or items, add them in the reverse order of
+        # how you want them to be displayed in the actual file.
+        meta.add_section('user')
+        meta.set('user', 'first_name', self.message.from_user.first_name)
+        meta.set('user', 'last_name', self.message.from_user.last_name)
+        meta.set('user', 'username', self.message.from_user.username)
+        meta.add_section('message')
+        meta.set('message', 'day', self.message.date.strftime('%Y-%m-%d'))
+        meta.set('message', 'hour', self.message.date.strftime('%H:%M:%S'))
+        if self.message.chat:
+            meta.set('message', 'chat_id', self.message.chat.id)
+            meta.set('message', 'chat_title', self.message.chat.title)
+        else:
+            meta.set('message', 'chat_id', '')
+            meta.set('message', 'chat_title', '')
+        
+        # Writing our configuration file
+        with open(meta_info_filename, 'wb') as metafile:
+            meta.write(metafile)
 
     def send(self):
         with open(self.compressed_file_path, 'rb') as file:
@@ -135,8 +163,9 @@ def on_photo_received(bot, update):
     logger.info("photo received")
 
     quality_level = 50 # 100 is full best quality, 1 is worst
-
-    PictureExtended(update.message, quality=quality_level).download_send2frame()
+    
+    if update and update.message:
+        PictureExtended(update.message, quality=quality_level).download_send2frame()
 
 #some test code
 def test_email():
