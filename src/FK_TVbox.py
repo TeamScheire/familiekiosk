@@ -3,6 +3,18 @@
 
 from __future__ import division, print_function
 
+# is a reply button connected to the TVbox ?
+REPLY_BUTTON = True
+REPLY_PIN = 18
+NEXT_BUTTON = True
+NEXT_PIN = 17
+
+REPLIES = [
+    "Mooi!",
+    "Geweldig :-)",
+    "Leuk dat je aan mij denkt. Bedankt om te delen."
+    ]
+
 import sys
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
     import Tkinter
@@ -18,6 +30,12 @@ else:
 
 from PIL import Image, ImageTk
 import time
+
+# you need: https://pypi.org/project/RPi.GPIO/ 
+# install via: sudo apt-get install python-rpi.gpio python3-rpi.gpio
+if REPLY_BUTTON or NEXT_BUTTON:
+    import RPi.GPIO as GPIO
+
 import glob
 import os
 
@@ -34,6 +52,8 @@ class TVbox():
         self.len_list = 0
         self.list_of_img = []
         self.timeshowimage = time.time()
+        self.replybtnpressed = False
+        self.nextbtnpressed = False
         
         self.root = tkinter.Tk()
         #self.root.attributes('-fullscreen', True)
@@ -65,12 +85,22 @@ class TVbox():
         #canvas.bind("<Return>", closefullscreen)
         self.canvas.bind("<ButtonPress-3>", self.closefullscreen)
         
+        # set up the reply button
+        if REPLY_BUTTON or NEXT_BUTTON:
+            GPIO.setmode(GPIO.BCM)
+        if REPLY_BUTTON:
+            #use pin 18 to query the pushbutton
+            GPIO.setup(REPLY_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        if NEXT_BUTTON:
+            #use pin 18 to query the pushbutton
+            GPIO.setup(NEXT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        
         self.listimages()
         self.showimage()
         
         self.canvas.pack()
     
-        self.update_label()
+        self.update_app()
         self.root.mainloop()
         
     def listimages(self):
@@ -124,21 +154,85 @@ class TVbox():
         self.image = ImageTk.PhotoImage(pilImage)
         imagesprite = self.canvas.create_image(self.w/2, (self.h-self.h_label)/2, image=self.image)
 
-    def update_label(self):
+    def btn_pressed(self, pin):
+        """
+        Determine if the reply button is pressed. Return True if pressed
+        """
+        if REPLY_BUTTON:
+            return GPIO.input(pin)
+        else:
+            return False
+
+    def is_do_reply(self):
+        """
+        We send reply if the reply button is released.
+        This returns True if this is the case, False otherwise
+        """
+        if not REPLY_BUTTON:
+            return False
+        
+        if self.btn_pressed(REPLY_PIN) and not self.replybtnpressed:
+            self.replybtnpressed = True
+            #time.sleep(0.1)
+            return False
+        
+        if self.replybtnpressed and not self.btn_pressed(REPLY_PIN):
+            # button released
+            self.replybtnpressed = False
+            return True
+        
+        return False
+
+    def is_do_next(self):
+        """
+        We do next if the next button is released.
+        This returns True if this is the case, False otherwise
+        """
+        if not NEXT_BUTTON:
+            return False
+        
+        if self.btn_pressed(NEXT_PIN) and not self.nextbtnpressed:
+            self.nextbtnpressed = True
+            #time.sleep(0.1)
+            return False
+        
+        if self.nextbtnpressed and not self.btn_pressed(NEXT_PIN):
+            # button released
+            self.nextbtnpressed = False
+            return True
+        
+        return False
+
+    def do_reply(self):
+        """
+        We send via telegram a chat that we like this image
+        """
+        print ("Replying to the shown image")
+        # obtain user that send the image
+        
+        # construct a reply
+        # 3 possibilities
+        
+        # send out the reply
+
+    def update_app(self):
         """
         Scheduled function running every second
         """
+        # test if reply button pressed
+        if self.is_do_reply():
+            self.do_reply()
+        
+        # update the label, show new image if needed
         now = time.strftime("%H:%M:%S")
-        txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
-        self.label.configure(text=txt)
         # update image if needed
-        if (time.time() > self.timeshowimage + SHOW_JPG_SEC):
+        if (self.is_do_next() or time.time() > self.timeshowimage + SHOW_JPG_SEC):
             self.showimagenr += 1
             self.showimage()
+        txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
+        self.label.configure(text=txt)
 
-
-        self.root.after(1000, self.update_label)
-        
+        self.root.after(200, self.update_app)
         
     def closefullscreen(self, event):
         #master.withdraw() # if you want to bring it back
