@@ -3,13 +3,7 @@
 
 from __future__ import division, print_function
 
-# is a reply button connected to the TVbox ?
-REPLY_BUTTON = True
-REPLY_PIN = 18
-NEXT_BUTTON = True
-NEXT_PIN = 17
-PREV_BUTTON = True
-PREV_PIN = 23
+from config import *
 
 HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
 
@@ -236,12 +230,21 @@ class TVbox():
         We send via telegram a chat that we like this image
         """
         print ("Replying to the shown image")
+        if len(self.list_of_img) == 0:
+            #nothing to reply to
+            return
         # obtain user that send the image
-        
-        # construct a reply
-        # 3 possibilities
-        
-        # send out the reply
+        meta_filename = self.list_of_img[self.currentimage] + '_meta.cfg'
+        #obtain meta information if present
+        if os.path.isfile(meta_filename):
+            config = ConfigParser.RawConfigParser()
+            config.read(meta_filename)
+            if config.get("message", "chat_id"):
+                #indicate to the chat bot to send a reply to this picture
+                dirn, basen = os.path.split(meta_filename)
+                reply_filename = os.path.join(dirn, 'reply', basen)
+                with open(reply_filename, 'wb') as replyfile:
+                    replyfile.write("reply")
 
     def update_app(self):
         """
