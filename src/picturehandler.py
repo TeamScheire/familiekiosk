@@ -130,8 +130,9 @@ class PictureExtended(Picture):
         with open(self.compressed_file_path, 'rb') as file:
             #we reply in telegram with the photo as feedback
             self.message.reply_photo(file, reply_to_message_id=self.reply_to_message_id)
-            #we send to photo frame email
-        send_mail(self.compressed_file_path, self.message)
+        #we send to photo frame email
+        if SEND_EMAIL_OF_PICS:
+            send_mail(self.compressed_file_path, self.message)
 
     def download_send2frame(self):
         self.download()
