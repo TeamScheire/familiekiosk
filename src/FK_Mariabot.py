@@ -20,11 +20,7 @@ bot.
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
 
-# the token of your bot obtained from Telegram
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-
-#email of photoframe
-EMAIL_FRAME = "YOUR_PIXSTAR_EMAIL@mypixstar.com"
+from config import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

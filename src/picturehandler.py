@@ -30,13 +30,9 @@ logger = logging.getLogger(__name__)
 
 BASE_FILE_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/{}_{}.jpg'
 
+from config import *
+
 EMAIL = ""
-#sending mail info 
-# note: required install: sudo apt-get install ssmtp 
-UserName = "YOUR_GMAIL_ACCOUNT@gmail.com"
-UserPassword = "YOUR_GMAIL_PASSWORD"
-SmptPort = 587  # google: 465
-SmptServer = 'smtp.gmail.com' #localhost' # google: 'smtp.gmail.com'
 
 def set_email(email):
     global EMAIL
