@@ -8,6 +8,10 @@ REPLY_BUTTON = True
 REPLY_PIN = 18
 NEXT_BUTTON = True
 NEXT_PIN = 17
+PREV_BUTTON = True
+PREV_PIN = 23
+
+HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
 
 REPLIES = [
     "Mooi!",
@@ -33,7 +37,7 @@ import time
 
 # you need: https://pypi.org/project/RPi.GPIO/ 
 # install via: sudo apt-get install python-rpi.gpio python3-rpi.gpio
-if REPLY_BUTTON or NEXT_BUTTON:
+if HAS_BUTTON:
     import RPi.GPIO as GPIO
 
 import glob
@@ -54,6 +58,7 @@ class TVbox():
         self.timeshowimage = time.time()
         self.replybtnpressed = False
         self.nextbtnpressed = False
+        self.prevbtnpressed = False
         
         self.root = tkinter.Tk()
         #self.root.attributes('-fullscreen', True)
@@ -86,7 +91,7 @@ class TVbox():
         self.canvas.bind("<ButtonPress-3>", self.closefullscreen)
         
         # set up the reply button
-        if REPLY_BUTTON or NEXT_BUTTON:
+        if HAS_BUTTON:
             GPIO.setmode(GPIO.BCM)
         if REPLY_BUTTON:
             #use pin 18 to query the pushbutton
@@ -94,6 +99,9 @@ class TVbox():
         if NEXT_BUTTON:
             #use pin 18 to query the pushbutton
             GPIO.setup(NEXT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        if PREV_BUTTON:
+            #use pin 23 to query the pushbutton
+            GPIO.setup(PREV_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         self.listimages()
         self.showimage()
@@ -158,7 +166,7 @@ class TVbox():
         """
         Determine if the reply button is pressed. Return True if pressed
         """
-        if REPLY_BUTTON:
+        if HAS_BUTTON:
             return GPIO.input(pin)
         else:
             return False
@@ -203,6 +211,26 @@ class TVbox():
         
         return False
 
+    def is_do_prev(self):
+        """
+        We do prev if the prev button is released.
+        This returns True if this is the case, False otherwise
+        """
+        if not PREV_BUTTON:
+            return False
+        
+        if self.btn_pressed(PREV_PIN) and not self.prevbtnpressed:
+            self.prevbtnpressed = True
+            #time.sleep(0.1)
+            return False
+        
+        if self.prevbtnpressed and not self.btn_pressed(PREV_PIN):
+            # button released
+            self.prevbtnpressed = False
+            return True
+        
+        return False
+
     def do_reply(self):
         """
         We send via telegram a chat that we like this image
@@ -226,7 +254,13 @@ class TVbox():
         # update the label, show new image if needed
         now = time.strftime("%H:%M:%S")
         # update image if needed
-        if (self.is_do_next() or time.time() > self.timeshowimage + SHOW_JPG_SEC):
+        if (self.is_do_prev()):
+            if self.showimagenr > 0:
+                self.showimagenr -= 1
+            else:
+                self.showimagenr = len(self.list_of_img) - 1
+            self.showimage()
+        elif (self.is_do_next() or time.time() > self.timeshowimage + SHOW_JPG_SEC):
             self.showimagenr += 1
             self.showimage()
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
