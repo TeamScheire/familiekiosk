@@ -7,11 +7,6 @@ from config import *
 
 HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
 
-REPLIES = [
-    "Mooi!",
-    "Geweldig :-)",
-    "Leuk dat je aan mij denkt. Bedankt om te delen."
-    ]
 
 import sys
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
@@ -38,7 +33,7 @@ import glob
 import os
 
 MAX_JPG = 20
-SHOW_JPG_SEC = 30  # how many seconds to show an image
+SHOW_JPG_SEC = 20  # how many seconds to show an image
 BASE_FILE_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
 IMAGES = os.path.join(BASE_FILE_PATH, '*.jpg')
 
@@ -116,7 +111,7 @@ class TVbox():
             self.showimagenr = 0
         self.len_list = len(list_of_files)
         self.list_of_img = list_of_files[:MAX_JPG]
-        print (self.list_of_img)
+        #print (self.list_of_img)
 
     def showimage(self):
         if self.currentimage != self.showimagenr:

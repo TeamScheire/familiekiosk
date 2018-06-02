@@ -17,7 +17,8 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
+                          Job)
 import logging
 
 from config import *
@@ -30,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 import picturehandler
 picturehandler.set_email(EMAIL_FRAME)
+from replyhandler import do_reply
 
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
@@ -52,7 +54,6 @@ def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
 
-
 def main():
     """Start the bot."""
     # Create the EventHandler and pass it your bot's token.
@@ -64,12 +65,19 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
-
+    
     # For testing: on noncommand i.e message - echo the message on Telegram
 #    dp.add_handler(MessageHandler(Filters.text, echo))
 
     # we react on receiving a picture
     dp.add_handler(MessageHandler(Filters.photo, picturehandler.on_photo_received))
+
+    # Get the job queue to shedule jobs, see doc at
+    # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-JobQueue
+    jq = updater.job_queue
+    
+    # scan if we need to reply from time to time (every 2 min)
+    job_reply = jq.run_repeating(do_reply, interval=120, first=0)
 
     # log all errors
     dp.add_error_handler(error)
