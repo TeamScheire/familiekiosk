@@ -40,6 +40,7 @@ def do_reply(bot, job):
         be posted on a picture
        Added to the jobqueue when chatbot starts
     """
+    global LAST_REPLY_TEXT
     # check if there are replies to give and in what chat window   
     for reply2do in listreplies():
         #obtain chat id
@@ -79,6 +80,8 @@ def do_reply(bot, job):
                 config.add_section('reply')
                 config.set('reply', 'msgnr', reply2use)
                 LAST_REPLY_TEXT = (LAST_REPLY_TEXT + 1) % len(REPLY_TEXT)
+            with open(meta_filename, 'wb') as metafile:
+                config.write(metafile)
 
         #now remove the fact we need to do reply as it is done
         os.remove(reply2do)

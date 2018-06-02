@@ -104,7 +104,8 @@ class TVbox():
         """
         Obtain a list of last 20 images to allow reaction
         """
-        list_of_files = sorted( glob.iglob(IMAGES), key=os.path.getctime, reverse=True)
+        list_of_files = sorted( glob.iglob(IMAGES), key=os.path.getmtime, reverse=True)
+    
         list_of_files = [x for x in list_of_files if x[-9:] != "_comp.jpg"]
         if self.len_list != len(list_of_files):
             #new image arrived, show it
@@ -237,9 +238,15 @@ class TVbox():
             if config.get("message", "chat_id"):
                 #indicate to the chat bot to send a reply to this picture
                 dirn, basen = os.path.split(meta_filename)
+                print ("Chat present, preparing reply on", basen)
                 reply_filename = os.path.join(dirn, 'reply', basen)
                 with open(reply_filename, 'wb') as replyfile:
                     replyfile.write("reply")
+            else:
+                print ("No chat id, no reply.", meta_filename)
+        else:
+            print ("No meta file, no reply.", meta_filename)
+
 
     def update_app(self):
         """
