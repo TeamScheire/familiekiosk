@@ -2,6 +2,9 @@
 # the token of your bot obtained from Telegram
 TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
+MAX_JPG = 20       # how many recent pics to show at alarm time ? 
+SHOW_JPG_SEC = 20  # how many seconds to show an image
+
 #send email of pictures you receive?
 SEND_EMAIL_OF_PICS = False
 

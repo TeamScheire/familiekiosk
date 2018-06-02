@@ -34,8 +34,6 @@ if HAS_GPIO:
 import glob
 import os
 
-MAX_JPG = 20
-SHOW_JPG_SEC = 20  # how many seconds to show an image
 BASE_FILE_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
 IMAGES = os.path.join(BASE_FILE_PATH, '*.jpg')
 
@@ -109,7 +107,9 @@ class TVbox():
         
     def listimages(self):
         """
-        Obtain a list of last 20 images to allow reaction
+        Obtain a list of images to allow reaction
+        30 min after alarm time: only the recent images
+        otherwise all images
         """
         list_of_files = sorted( glob.iglob(IMAGES), key=os.path.getmtime, reverse=True)
     
@@ -118,7 +118,18 @@ class TVbox():
             #new image arrived, show it
             self.showimagenr = 0
         self.len_list = len(list_of_files)
-        self.list_of_img = list_of_files[:MAX_JPG]
+        
+        #30 min after alarm time only recent images
+        now = datetime.now()
+        limit_min_start = ALARM_HOUR * 60 + ALARM_MIN
+        limit_min_end = limit_min_start + 30
+        now_min = now.hour *60 + now.minute
+        print (limit_min_start, now_min, limit_min_end)
+        # limit pics if needed
+        if limit_min_start <= now_min <= limit_min_end:
+            self.list_of_img = list_of_files[:MAX_JPG]
+        else:
+            self.list_of_img = list_of_files
         #print (self.list_of_img)
 
     def showimage(self):
