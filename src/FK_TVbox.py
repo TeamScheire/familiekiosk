@@ -6,6 +6,7 @@ from __future__ import division, print_function
 from config import *
 
 HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
+HAS_GPIO = HAS_BUTTON or BUZZER_PRESENT
 
 
 import sys
@@ -23,10 +24,11 @@ else:
 
 from PIL import Image, ImageTk
 import time
+import datetime
 
 # you need: https://pypi.org/project/RPi.GPIO/ 
 # install via: sudo apt-get install python-rpi.gpio python3-rpi.gpio
-if HAS_BUTTON:
+if HAS_GPIO:
     import RPi.GPIO as GPIO
 
 import glob
@@ -40,6 +42,9 @@ IMAGES = os.path.join(BASE_FILE_PATH, '*.jpg')
 class TVbox():
         
     def __init__(self):
+        self.timeticks = 200
+        self.timeslept = 0
+        
         self.currentimage = -1
         self.showimagenr = 0
         self.len_list = 0
@@ -80,7 +85,7 @@ class TVbox():
         self.canvas.bind("<ButtonPress-3>", self.closefullscreen)
         
         # set up the reply button
-        if HAS_BUTTON:
+        if HAS_GPIO:
             GPIO.setmode(GPIO.BCM)
         if REPLY_BUTTON:
             #use pin 18 to query the pushbutton
@@ -91,6 +96,8 @@ class TVbox():
         if PREV_BUTTON:
             #use pin 23 to query the pushbutton
             GPIO.setup(PREV_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        if BUZZER_PRESENT:
+            GPIO.setup(BUZZER_PIN, GPIO.OUT)
         
         self.listimages()
         self.showimage()
@@ -247,11 +254,27 @@ class TVbox():
         else:
             print ("No meta file, no reply.", meta_filename)
 
+    def do_alarm(self):    
+        alarm_on = True
+        # default: no alarm
+        GPIO.output(BUZZERPIN, GPIO.HIGH)
+        # from 18.00 to 18.01 we do alarm
+        cur = datetime.time
+        if cur.hour == 18:
+            if cur.minute < 1:
+                alarm_on = True
+        if alarm_on:
+            #do on for 50 ms
+            GPIO.output(BUZZERPIN, GPIO.LOW)
+            time.sleep(50)
+            self.timeslept += 50
+            GPIO.output(BUZZERPIN, GPIO.HIGH)
 
     def update_app(self):
         """
         Scheduled function running every second
         """
+        self.timeslept = 0
         # test if reply button pressed
         if self.is_do_reply():
             self.do_reply()
@@ -270,8 +293,11 @@ class TVbox():
             self.showimage()
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
         self.label.configure(text=txt)
-
-        self.root.after(200, self.update_app)
+        
+        # check time to see if we need to do alarm 
+        self.do_alarm()        
+        
+        self.root.after(200-self.timeslept, self.update_app)
         
     def closefullscreen(self, event):
         #master.withdraw() # if you want to bring it back

@@ -22,3 +22,8 @@ NEXT_BUTTON = False
 NEXT_PIN = 17
 PREV_BUTTON = False
 PREV_PIN = 23
+
+# is a button for an alarm connected? 
+BUZZER_PRESENT = False
+BUZZER_PIN = 24
+
