@@ -24,7 +24,7 @@ else:
 
 from PIL import Image, ImageTk
 import time
-import datetime
+from datetime import datetime
 
 # you need: https://pypi.org/project/RPi.GPIO/ 
 # install via: sudo apt-get install python-rpi.gpio python3-rpi.gpio
@@ -254,21 +254,22 @@ class TVbox():
         else:
             print ("No meta file, no reply.", meta_filename)
 
-    def do_alarm(self):    
-        alarm_on = True
+    def do_alarm(self):
+        alarm_on = False
         # default: no alarm
-        GPIO.output(BUZZERPIN, GPIO.HIGH)
-        # from 18.00 to 18.01 we do alarm
-        cur = datetime.time
-        if cur.hour == 18:
-            if cur.minute < 1:
-                alarm_on = True
+        GPIO.output(BUZZER_PIN, GPIO.HIGH)
+        now = datetime.now()
+        # do 1 minute alarm
+        if now.hour == ALARM_HOUR:
+            if now.minute == ALARM_MIN:
+                if now.second % 6 < 3:
+                    alarm_on = True
         if alarm_on:
             #do on for 50 ms
-            GPIO.output(BUZZERPIN, GPIO.LOW)
-            time.sleep(50)
+            GPIO.output(BUZZER_PIN, GPIO.LOW)
+            time.sleep(0.05)
             self.timeslept += 50
-            GPIO.output(BUZZERPIN, GPIO.HIGH)
+            GPIO.output(BUZZER_PIN, GPIO.HIGH)
 
     def update_app(self):
         """
@@ -294,14 +295,19 @@ class TVbox():
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
         self.label.configure(text=txt)
         
-        # check time to see if we need to do alarm 
-        self.do_alarm()        
+        # check time to see if we need to do alarm
+        if BUZZER_PRESENT and ALARM_SET:
+            self.do_alarm()       
         
         self.root.after(200-self.timeslept, self.update_app)
         
     def closefullscreen(self, event):
         #master.withdraw() # if you want to bring it back
         print ("In close fullscreen")
+        if BUZZER_PRESENT:
+            #switch off
+            GPIO.output(BUZZER_PIN, GPIO.HIGH)
+            
         self.root.destroy()
         #event.widget.withdraw()
         #event.widget.quit()

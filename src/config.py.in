@@ -26,4 +26,7 @@ PREV_PIN = 23
 # is a button for an alarm connected? 
 BUZZER_PRESENT = False
 BUZZER_PIN = 24
-
+# do a one minute alarm? When?
+ALARM_SET = True
+ALARM_HOUR = 18
+ALARM_MIN = 0
