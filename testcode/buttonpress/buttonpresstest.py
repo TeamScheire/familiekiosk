@@ -20,9 +20,10 @@ BUZZERPIN = 24
 GPIO.setup(BUZZERPIN, GPIO.OUT)
 
 while True:
-    input_state = GPIO.input(17)
+    input_state = GPIO.input(18)
     if input_state == False:
         print('Button Pressed')
+        #buzzer on
         GPIO.output(BUZZERPIN, GPIO.LOW)
         time.sleep(0.2)        
     else:
