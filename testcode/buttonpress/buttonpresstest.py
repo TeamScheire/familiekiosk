@@ -13,11 +13,19 @@ import time
 
 GPIO.setmode(GPIO.BCM)
 
-#use pin 17 to query the pushbutton
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+#use pin 18 to query the pushbutton
+GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+#use pin 24 as output for BUZZER
+BUZZERPIN = 24
+GPIO.setup(BUZZERPIN, GPIO.OUT)
 
 while True:
     input_state = GPIO.input(17)
     if input_state == False:
         print('Button Pressed')
+        GPIO.output(BUZZERPIN, GPIO.LOW)
+        time.sleep(0.2)        
+    else:
+        GPIO.output(BUZZERPIN, GPIO.HIGH)
         time.sleep(0.2)
+        
