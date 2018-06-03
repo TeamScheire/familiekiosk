@@ -32,6 +32,8 @@ logger = logging.getLogger(__name__)
 import picturehandler
 picturehandler.set_email(EMAIL_FRAME)
 from replyhandler import do_reply
+import voicehandler
+import videohandler
 
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
@@ -71,6 +73,10 @@ def main():
 
     # we react on receiving a picture
     dp.add_handler(MessageHandler(Filters.photo, picturehandler.on_photo_received))
+    # we react on receiving an voice message
+    dp.add_handler(MessageHandler(Filters.voice, voicehandler.on_voice_received))
+    dp.add_handler(MessageHandler(Filters.video_note, videohandler.on_video_note_received))
+    dp.add_handler(MessageHandler(Filters.video, videohandler.on_video_received))
 
     # Get the job queue to shedule jobs, see doc at
     # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-JobQueue
@@ -83,13 +89,12 @@ def main():
     dp.add_error_handler(error)
 
     # Start the Bot
-    updater.start_polling()
+    updater.start_polling(poll_interval=5, timeout=10)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-
 
 if __name__ == '__main__':
     #some blabla to update chmod
