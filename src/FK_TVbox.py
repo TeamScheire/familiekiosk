@@ -12,7 +12,7 @@ STATE_PIC = 0
 STATE_VID = 1
 STATE_AUD = 2
 
-TEST_VID = True
+TEST_VID = False
 
 import os
 import sys
@@ -42,7 +42,6 @@ if HAS_GPIO:
     import RPi.GPIO as GPIO
 
 import glob
-
 
 import gi
 gi.require_version('Gst', '1.0')      # install with: sudo apt-get install python-gst-1.0 gstreamer1.0-tools
@@ -168,7 +167,7 @@ class TVbox():
 
     def set_frame_handle(self, bus, message):
         if not message.get_structure() is None:
-            print (message.get_structure().get_name())
+            #print (message.get_structure().get_name())
             if message.get_structure().get_name() == 'prepare-window-handle':
                 display_frame = message.src
                 display_frame.set_property('force-aspect-ratio', True)
@@ -202,7 +201,7 @@ class TVbox():
         limit_min_start = ALARM_HOUR * 60 + ALARM_MIN
         limit_min_end = limit_min_start + 30
         now_min = now.hour *60 + now.minute
-        print (limit_min_start, now_min, limit_min_end)
+        #print (limit_min_start, now_min, limit_min_end)
         # limit pics if needed
         if limit_min_start <= now_min <= limit_min_end:
             return True
@@ -330,9 +329,9 @@ class TVbox():
                 return
 
             self.showvideonr = self.showvideonr % len(self.list_of_vid)
-            
+
             if USE_EXTERNAL_VIDEO_PLAYER:
-                subprocess.call(['omxplayer', self.list_of_vid[self.showvideonr]]) 
+                subprocess.Popen(['omxplayer', self.list_of_vid[self.showvideonr]]) 
             else:
                 #show video
                 if hasattr(self, 'player'):
@@ -344,9 +343,9 @@ class TVbox():
                 self.bus.connect('sync-message::element', self.set_frame_handle)
                 self.set_video(self.list_of_vid[self.showvideonr])
                 self.player.set_state(Gst.State.PLAYING)
-                
-            meta_filename = self.list_of_vid[self.showvideonr] + '_meta.cfg'
+
             self.timeshowstart = time.time()
+            meta_filename = self.list_of_vid[self.showvideonr] + '_meta.cfg'
             self.currentvideo = self.showvideonr
             #obtain meta information if present
             if meta_filename and os.path.isfile(meta_filename):
@@ -372,7 +371,7 @@ class TVbox():
 
             self.showaudionr = self.showaudionr % len(self.list_of_aud)
             print('playing', self.showaudionr, self.list_of_aud[self.showaudionr])
-            
+
             #if USE_EXTERNAL_VIDEO_PLAYER:
             #    subprocess.call(['omxplayer', self.list_of_aud[self.showaudionr]]) 
             #else:
@@ -388,8 +387,8 @@ class TVbox():
                 self.set_video(self.list_of_aud[self.showaudionr])
                 self.player.set_state(Gst.State.PLAYING)
                 
-            meta_filename = self.list_of_aud[self.showaudionr] + '_meta.cfg'
             self.timeshowstart = time.time()
+            meta_filename = self.list_of_aud[self.showaudionr] + '_meta.cfg'
             self.currentaudio = self.showaudionr
             #obtain meta information if present
             if meta_filename and os.path.isfile(meta_filename):
@@ -572,7 +571,6 @@ class TVbox():
                         self.state = STATE_AUD
                 self.show()
         elif self.state == STATE_VID:
-            print ('in state vid', self.timeshowstart + self.playduration, time.time())
             if self.change_state:
                 self.hide_pic()
                 self.show_vid()
@@ -588,7 +586,6 @@ class TVbox():
                         self.state = STATE_PIC
                 self.show()
             elif (self.is_do_next() or time.time() > self.timeshowstart + self.playduration):
-                print ('show next vid')
                 self.showvideonr += 1
                 self.showvideonr = self.showvideonr % len(self.list_of_vid)
                 if (self.most_recent_mode() and self.showvideonr % len(self.list_of_vid) == 0):

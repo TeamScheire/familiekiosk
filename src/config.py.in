@@ -37,4 +37,7 @@ ALARM_HOUR = 18
 ALARM_MIN = 0
 
 USE_EXTERNAL_VIDEO_PLAYER = True
+# add to /boot/config.txt   https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio
+# # sufficient gpu to run omxplayer
+# gpu_mem=128
 EXTERNAL_VIDEO_PLAYER = 'omxplayer'
