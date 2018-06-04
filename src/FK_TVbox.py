@@ -8,13 +8,19 @@ from config import *
 HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
 HAS_GPIO = HAS_BUTTON or BUZZER_PRESENT
 
+STATE_PIC = 0
+STATE_VID = 1
+STATE_AUD = 2
 
+import os
 import sys
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
     import Tkinter
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
 else:
     import tkinter
+
+import threading
 
 if sys.version_info[0] == 2:  # the configparser library changed it's name from Python 2 to 3.
     import ConfigParser
@@ -32,14 +38,28 @@ if HAS_GPIO:
     import RPi.GPIO as GPIO
 
 import glob
-import os
 
-BASE_FILE_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
-IMAGES = os.path.join(BASE_FILE_PATH, '*.jpg')
+
+import gi
+gi.require_version('Gst', '1.0')      # install with: sudo apt-get install python-gst-1.0
+gi.require_version('GstVideo', '1.0')
+gi.require_version('GdkX11', '3.0')
+from gi.repository import Gst, GObject, GdkX11, GstVideo
+
+
+BASE_PIC_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
+IMAGES = os.path.join(BASE_PIC_PATH, '*.jpg')
+
+BASE_VID_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/video/'
+VIDEOS = os.path.join(BASE_PIC_PATH, '*.mp4')
+
+testvid = BASE_VID_PATH + "/dummy/testvideo.mp4"
+
 
 class TVbox():
         
     def __init__(self):
+        self.state = STATE_PIC
         self.timeticks = 200
         self.timeslept = 0
         
@@ -101,9 +121,62 @@ class TVbox():
         self.showimage()
         
         self.canvas.pack()
-    
+        
+        # add gstreamer now in it's own canvas
+        
+        GObject.threads_init()
+        Gst.init(None)
+        
+        # you can also use display_frame = tkinter.Frame(window)
+        self.display_frame = tkinter.Canvas(self.root, width=self.w, height=self.h-self.h_label, bg="black",
+                                     highlightthickness=0)
+        self.display_frame.bind("<ButtonPress-3>", self.closefullscreen)
+        self.display_frame.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+        self.frame_id = self.display_frame.winfo_id()
+        
+        self.player = Gst.ElementFactory.make('playbin', None)
+        
+        self.set_video(testvid)
+        self.bus = self.player.get_bus()
+        self.bus.enable_sync_message_emission()
+        self.bus.connect('sync-message::element', self.set_frame_handle)
+
+        #start with pics only     
+        self.hide_vid()
+        
         self.update_app()
+        
         self.root.mainloop()
+
+
+    def set_frame_handle(self, bus, message):
+        if not message.get_structure() is None:
+            print (message.get_structure().get_name())
+            if message.get_structure().get_name() == 'prepare-window-handle':
+                self.display_frame = message.src
+                self.display_frame.set_property('force-aspect-ratio', True)
+                self.display_frame.set_window_handle(self.frame_id)
+
+    def show_pic(self):
+        self.canvas.pack()
+    
+    def hide_pic(self):
+        self.canvas.pack_forget()
+        
+    def show_vid(self):
+        self.display_frame.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+        self.frame_id = self.display_frame.winfo_id()
+        self.bus = self.player.get_bus()
+        self.bus.enable_sync_message_emission()
+        self.bus.connect('sync-message::element', self.set_frame_handle)
+    
+    def hide_vid(self):
+        self.display_frame.pack_forget()
+
+    def set_video(self, path):
+        filepath = os.path.realpath(path)
+        filepath2 = "file:///" + filepath.replace('\\', '/').replace(':', '|')
+        self.player.set_property('uri', filepath2)
         
     def listimages(self):
         """
@@ -139,7 +212,7 @@ class TVbox():
             # now show the next image
             if len(self.list_of_img) == 0 :
                 #no images yet, show dummy
-                self.showPIL(os.path.join(BASE_FILE_PATH, 'dummy', 'dummy.jpg'))
+                self.showPIL(os.path.join(BASE_PIC_PATH, 'dummy', 'dummy.jpg'))
                 meta_filename = None
             else:
                 self.showimagenr = self.showimagenr % len(self.list_of_img)
@@ -293,16 +366,27 @@ class TVbox():
         
         # update the label, show new image if needed
         now = time.strftime("%H:%M:%S")
-        # update image if needed
-        if (self.is_do_prev()):
-            if self.showimagenr > 0:
-                self.showimagenr -= 1
-            else:
-                self.showimagenr = len(self.list_of_img) - 1
-            self.showimage()
-        elif (self.is_do_next() or time.time() > self.timeshowimage + SHOW_JPG_SEC):
-            self.showimagenr += 1
-            self.showimage()
+        if self.state == STATE_PIC:
+            # update image if needed
+            if (self.is_do_prev()):
+                if self.showimagenr > 0:
+                    self.showimagenr -= 1
+                else:
+                    self.showimagenr = len(self.list_of_img) - 1
+                self.showimage()
+            elif (self.is_do_next() or time.time() > self.timeshowimage + SHOW_JPG_SEC):
+                self.showimagenr += 1
+                self.showimage()
+                #testing
+                self.state = STATE_VID
+                self.change_state = True
+        elif self.state == STATE_VID:
+            if self.change_state:
+                self.hide_pic()
+                self.show_vid()
+                #show video
+                self.player.set_state(Gst.State.PLAYING)
+                self.change_state = False
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
         self.label.configure(text=txt)
         
