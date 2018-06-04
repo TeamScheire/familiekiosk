@@ -4,6 +4,8 @@ TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
 MAX_JPG = 20       # how many recent pics to show at alarm time ? 
 SHOW_JPG_SEC = 20  # how many seconds to show an image
+MAX_VID = 20       # how many recent videos to show at alarm time ? 
+MAX_AUD = 20       # how many recent voice clips to show at alarm time ? 
 
 #send email of pictures you receive?
 SEND_EMAIL_OF_PICS = False
@@ -33,3 +35,6 @@ BUZZER_PIN = 24
 ALARM_SET = True
 ALARM_HOUR = 18
 ALARM_MIN = 0
+
+USE_EXTERNAL_VIDEO_PLAYER = True
+EXTERNAL_VIDEO_PLAYER = 'omxplayer'

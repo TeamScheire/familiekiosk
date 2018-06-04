@@ -12,6 +12,8 @@ STATE_PIC = 0
 STATE_VID = 1
 STATE_AUD = 2
 
+TEST_VID = True
+
 import os
 import sys
 
@@ -43,7 +45,7 @@ import glob
 
 
 import gi
-gi.require_version('Gst', '1.0')      # install with: sudo apt-get install python-gst-1.0
+gi.require_version('Gst', '1.0')      # install with: sudo apt-get install python-gst-1.0 gstreamer1.0-tools
 gi.require_version('GstVideo', '1.0')
 gi.require_version('GdkX11', '3.0')
 from gi.repository import Gst, GObject, GdkX11, GstVideo
@@ -53,23 +55,36 @@ BASE_PIC_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
 IMAGES = os.path.join(BASE_PIC_PATH, '*.jpg')
 
 BASE_VID_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/video/'
-VIDEOS = os.path.join(BASE_PIC_PATH, '*.mp4')
+VIDEOS = os.path.join(BASE_VID_PATH, '*.mp4')
+
+BASE_AUD_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/voice/'
+VOICES = os.path.join(BASE_AUD_PATH, '*.ogg')
 
 testvid = BASE_VID_PATH + "/dummy/testvideo.mp4"
+testaud = BASE_AUD_PATH + "/dummy/testvoice.ogg"
 
 
 class TVbox():
         
     def __init__(self):
         self.state = STATE_PIC
+        self.change_state = False
         self.timeticks = 200
         self.timeslept = 0
         
         self.currentimage = -1
+        self.currentvideo = -1
+        self.currentaudio = -1
         self.showimagenr = 0
-        self.len_list = 0
+        self.showvideonr = 0
+        self.showaudionr = 0
+        self.len_img_list = 0
+        self.len_vid_list = 0
+        self.len_aud_list = 0
         self.list_of_img = []
-        self.timeshowimage = time.time()
+        self.list_of_vid = []
+        self.list_of_aud = []
+        self.timeshowstart = time.time()
         self.replybtnpressed = False
         self.nextbtnpressed = False
         self.prevbtnpressed = False
@@ -118,10 +133,7 @@ class TVbox():
             GPIO.setup(PREV_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         if BUZZER_PRESENT:
             GPIO.setup(BUZZER_PIN, GPIO.OUT)
-        
-        self.listimages()
-        self.showimage()
-        
+
         self.canvas.pack()
         
         # add gstreamer now in it's own canvas
@@ -135,16 +147,19 @@ class TVbox():
         self.display_frame.bind("<ButtonPress-3>", self.closefullscreen)
         self.display_frame.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
         self.frame_id = self.display_frame.winfo_id()
-        
-        self.player = Gst.ElementFactory.make('playbin', None)
-        
-        self.set_video(testvid)
-        self.bus = self.player.get_bus()
-        self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message::element', self.set_frame_handle)
 
+        self.listimages()
+        self.listvideos()
+        self.listvoices()
+        
+        if (TEST_VID):
+            self.state = STATE_AUD
+            self.change_state = True
+
+        self.show()
+        
         #start with pics only     
-        self.hide_vid()
+        #self.hide_vid()
         
         self.update_app()
         
@@ -155,9 +170,9 @@ class TVbox():
         if not message.get_structure() is None:
             print (message.get_structure().get_name())
             if message.get_structure().get_name() == 'prepare-window-handle':
-                self.display_frame = message.src
-                self.display_frame.set_property('force-aspect-ratio', True)
-                self.display_frame.set_window_handle(self.frame_id)
+                display_frame = message.src
+                display_frame.set_property('force-aspect-ratio', True)
+                display_frame.set_window_handle(self.frame_id)
 
     def show_pic(self):
         self.canvas.pack()
@@ -167,11 +182,8 @@ class TVbox():
         
     def show_vid(self):
         self.display_frame.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
-        self.frame_id = self.display_frame.winfo_id()
-        self.bus = self.player.get_bus()
-        self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message::element', self.set_frame_handle)
-    
+        self.frame_id = self.display_frame.winfo_id()    
+        
     def hide_vid(self):
         self.display_frame.pack_forget()
 
@@ -179,7 +191,23 @@ class TVbox():
         filepath = os.path.realpath(path)
         filepath2 = "file:///" + filepath.replace('\\', '/').replace(':', '|')
         self.player.set_property('uri', filepath2)
-        
+
+    def most_recent_mode(self):
+        """
+        In recent mode or not? recent mode is from Alarm to Alarm + 30 min
+        """
+        if (TEST_VID): return True
+        #30 min after alarm time only recent images
+        now = datetime.now()
+        limit_min_start = ALARM_HOUR * 60 + ALARM_MIN
+        limit_min_end = limit_min_start + 30
+        now_min = now.hour *60 + now.minute
+        print (limit_min_start, now_min, limit_min_end)
+        # limit pics if needed
+        if limit_min_start <= now_min <= limit_min_end:
+            return True
+        return False
+
     def listimages(self):
         """
         Obtain a list of images to allow reaction
@@ -189,24 +217,71 @@ class TVbox():
         list_of_files = sorted( glob.iglob(IMAGES), key=os.path.getmtime, reverse=True)
     
         list_of_files = [x for x in list_of_files if x[-9:] != "_comp.jpg"]
-        if self.len_list != len(list_of_files):
+        if self.len_img_list != len(list_of_files):
             #new image arrived, show it
             self.showimagenr = 0
-        self.len_list = len(list_of_files)
+        self.len_img_list = len(list_of_files)
         
-        #30 min after alarm time only recent images
-        now = datetime.now()
-        limit_min_start = ALARM_HOUR * 60 + ALARM_MIN
-        limit_min_end = limit_min_start + 30
-        now_min = now.hour *60 + now.minute
-        print (limit_min_start, now_min, limit_min_end)
-        # limit pics if needed
-        if limit_min_start <= now_min <= limit_min_end:
+        if self.most_recent_mode():
             self.list_of_img = list_of_files[:MAX_JPG]
         else:
             self.list_of_img = list_of_files
         #print (self.list_of_img)
 
+    def listvideos(self):
+        """
+        Obtain a list of videos to allow reaction
+        30 min after alarm time: only the recent videos
+        otherwise all videos
+        """
+        list_of_files = sorted( glob.iglob(VIDEOS), key=os.path.getmtime, reverse=True)
+    
+        if self.len_vid_list != len(list_of_files):
+            #new video arrived, show it
+            self.showvideonr = 0
+        self.len_vid_list = len(list_of_files)
+        
+        if self.most_recent_mode():
+            self.list_of_vid = list_of_files[:MAX_VID]
+        else:
+            self.list_of_vid = list_of_files
+
+    def listvoices(self):
+        """
+        Obtain a list of voice messages to allow reaction
+        30 min after alarm time: only the recent videos
+        otherwise all videos
+        """
+        list_of_files = sorted( glob.iglob(VOICES), key=os.path.getmtime, reverse=True)
+    
+        if self.len_aud_list != len(list_of_files):
+            #new video arrived, show it
+            self.showaudionr = 0
+        self.len_aud_list = len(list_of_files)
+        
+        if self.most_recent_mode():
+            self.list_of_aud = list_of_files[:MAX_AUD]
+        else:
+            self.list_of_aud = list_of_files
+
+    def show(self):
+        """ update what we show """
+        if not self.most_recent_mode():
+            #we should only show pictures! 
+            if self.state != STATE_PIC:
+                self.state = STATE_PIC
+                self.change_state = False
+                self.hide_vid()
+                self.show_pic()
+        
+        #depending on state, we show pic, video or voice
+        if self.state == STATE_PIC:
+            self.showimage()
+        elif self.state == STATE_VID:
+            self.showvideo()
+        elif self.state == STATE_AUD:
+            self.showvoice()
+                            
     def showimage(self):
         if self.currentimage != self.showimagenr:
             # we regenerate list of images to have latest present
@@ -220,7 +295,7 @@ class TVbox():
                 self.showimagenr = self.showimagenr % len(self.list_of_img)
                 self.showPIL(self.list_of_img[self.showimagenr])
                 meta_filename = self.list_of_img[self.showimagenr] + '_meta.cfg'
-            self.timeshowimage = time.time()
+            self.timeshowstart = time.time()
             self.currentimage = self.showimagenr
             #obtain meta information if present
             if meta_filename and os.path.isfile(meta_filename):
@@ -244,6 +319,90 @@ class TVbox():
         pilImage = pilImage.resize((imgWidth, imgHeight), Image.ANTIALIAS)
         self.image = ImageTk.PhotoImage(pilImage)
         imagesprite = self.canvas.create_image(self.w/2, (self.h-self.h_label)/2, image=self.image)
+
+    def showvideo(self):
+        if self.currentvideo != self.showvideonr:
+            # we regenerate list of vids to have latest present
+            self.listvideos()
+            # now show the next image
+            if len(self.list_of_vid) == 0 :
+                #no vid yet, ERROR ! 
+                return
+
+            self.showvideonr = self.showvideonr % len(self.list_of_vid)
+            
+            if USE_EXTERNAL_VIDEO_PLAYER:
+                subprocess.call(['omxplayer', self.list_of_vid[self.showvideonr]]) 
+            else:
+                #show video
+                if hasattr(self, 'player'):
+                    del self.bus
+                    del self.player
+                self.player = Gst.ElementFactory.make('playbin', None)
+                self.bus = self.player.get_bus()
+                self.bus.enable_sync_message_emission()
+                self.bus.connect('sync-message::element', self.set_frame_handle)
+                self.set_video(self.list_of_vid[self.showvideonr])
+                self.player.set_state(Gst.State.PLAYING)
+                
+            meta_filename = self.list_of_vid[self.showvideonr] + '_meta.cfg'
+            self.timeshowstart = time.time()
+            self.currentvideo = self.showvideonr
+            #obtain meta information if present
+            if meta_filename and os.path.isfile(meta_filename):
+                config = ConfigParser.RawConfigParser()
+                config.read(meta_filename)
+                self.img_user = "{} {}".format(config.get("user", "first_name"),
+                                           config.get("user", "last_name"))
+                self.img_day = config.get("message", "day")
+                self.playduration = config.getfloat("message", "duration") + 3
+            else:
+                self.img_user = ''
+                self.img_day = ''
+                self.playduration = 10
+
+    def showvoice(self):
+        if self.currentaudio != self.showaudionr:
+            # we regenerate list of vids to have latest present
+            self.listvoices()
+            # now show the next image
+            if len(self.list_of_aud) == 0 :
+                #no vid yet, ERROR ! 
+                return
+
+            self.showaudionr = self.showaudionr % len(self.list_of_aud)
+            print('playing', self.showaudionr, self.list_of_aud[self.showaudionr])
+            
+            #if USE_EXTERNAL_VIDEO_PLAYER:
+            #    subprocess.call(['omxplayer', self.list_of_aud[self.showaudionr]]) 
+            #else:
+            if True:
+                #play audio
+                if hasattr(self, 'player'):
+                    del self.bus
+                    del self.player
+                self.player = Gst.ElementFactory.make('playbin', None)
+                self.bus = self.player.get_bus()
+                self.bus.enable_sync_message_emission()
+                self.bus.connect('sync-message::element', self.set_frame_handle)
+                self.set_video(self.list_of_aud[self.showaudionr])
+                self.player.set_state(Gst.State.PLAYING)
+                
+            meta_filename = self.list_of_aud[self.showaudionr] + '_meta.cfg'
+            self.timeshowstart = time.time()
+            self.currentaudio = self.showaudionr
+            #obtain meta information if present
+            if meta_filename and os.path.isfile(meta_filename):
+                config = ConfigParser.RawConfigParser()
+                config.read(meta_filename)
+                self.img_user = "{} {}".format(config.get("user", "first_name"),
+                                           config.get("user", "last_name"))
+                self.img_day = config.get("message", "day")
+                self.playduration = config.getfloat("message", "duration") + 3
+            else:
+                self.img_user = ''
+                self.img_day = ''
+                self.playduration = 10
 
     def btn_pressed(self, pin):
         """
@@ -318,12 +477,27 @@ class TVbox():
         """
         We send via telegram a chat that we like this image
         """
-        print ("Replying to the shown image")
-        if len(self.list_of_img) == 0:
+        print ("Replying to the shown image or video")
+        if ((self.state == STATE_PIC and len(self.list_of_img) == 0) or
+           (self.state == STATE_VID and len(self.list_of_vid) == 0) or
+           (self.state == STATE_AUD and len(self.list_of_aud) == 0)) :
             #nothing to reply to
             return
         # obtain user that send the image
-        meta_filename = self.list_of_img[self.currentimage] + '_meta.cfg'
+        if (self.state == STATE_PIC):
+            ourlist = self.list_of_img
+            current = self.currentimage
+        elif (self.state == STATE_VID):
+            ourlist = self.list_of_vid
+            current = self.currentvideo
+        elif (self.state == STATE_AUD):
+            # we don't reply to audio msg
+            ourlist = self.list_of_aud
+            current = self.currentaudio
+        else:
+            return
+            
+        meta_filename = ourlist[current] + '_meta.cfg'
         #obtain meta information if present
         if os.path.isfile(meta_filename):
             config = ConfigParser.RawConfigParser()
@@ -369,27 +543,86 @@ class TVbox():
         # update the label, show new image if needed
         now = time.strftime("%H:%M:%S")
         if self.state == STATE_PIC:
+            if self.change_state:
+                self.hide_vid()
+                self.show_pic()
+                self.change_state = False
             # update image if needed
             if (self.is_do_prev()):
                 if self.showimagenr > 0:
                     self.showimagenr -= 1
                 else:
                     self.showimagenr = len(self.list_of_img) - 1
-                self.showimage()
-            elif (self.is_do_next() or time.time() > self.timeshowimage + SHOW_JPG_SEC):
+                    if self.most_recent_mode(): 
+                        #change state to voice if messages
+                        self.change_state = True
+                        if len(self.list_of_aud):
+                            self.state = STATE_AUD
+                        elif len(self.list_of_vid):
+                            self.state = STATE_VID
+                self.show()
+            elif (self.is_do_next() or time.time() > self.timeshowstart + SHOW_JPG_SEC):
                 self.showimagenr += 1
-                self.showimage()
-                #testing
-                self.state = STATE_VID
-                self.change_state = True
+                self.showimagenr = self.showimagenr % len(self.list_of_img)
+                if (self.most_recent_mode() and self.showimagenr % len(self.list_of_img) == 0):
+                    self.change_state = True
+                    if len(self.list_of_vid):
+                        self.state = STATE_VID
+                    elif len(self.list_of_aud):
+                        self.state = STATE_AUD
+                self.show()
         elif self.state == STATE_VID:
+            print ('in state vid', self.timeshowstart + self.playduration, time.time())
             if self.change_state:
                 self.hide_pic()
                 self.show_vid()
-                #show video
-                #self.player.set_state(Gst.State.PLAYING)
-                self.change_state = False
-                subprocess.call(['omxplayer', testvid]) 
+                
+            if (self.is_do_prev()):
+                if self.showvideonr > 0:
+                    self.showvideonr -= 1
+                else:
+                    self.showvideonr = len(self.list_of_vid) - 1
+                    if self.most_recent_mode(): 
+                        #change state to pic
+                        self.change_state = True
+                        self.state = STATE_PIC
+                self.show()
+            elif (self.is_do_next() or time.time() > self.timeshowstart + self.playduration):
+                print ('show next vid')
+                self.showvideonr += 1
+                self.showvideonr = self.showvideonr % len(self.list_of_vid)
+                if (self.most_recent_mode() and self.showvideonr % len(self.list_of_vid) == 0):
+                    self.change_state = True
+                    if len(self.list_of_aud):
+                        self.state = STATE_AUD
+                    else:
+                        self.state = STATE_PIC
+                self.show()
+        
+        elif self.state == STATE_AUD:
+            if self.change_state:
+                self.hide_pic()
+                self.show_vid()
+                
+            if (self.is_do_prev()):
+                if self.showaudionr > 0:
+                    self.showaudionr -= 1
+                else:
+                    self.showaudionr = len(self.list_of_aud) - 1
+                    if self.most_recent_mode(): 
+                        if len(self.list_of_vid):
+                            self.state = STATE_VID
+                        else:
+                            self.state = STATE_PIC
+                self.show()
+            elif (self.is_do_next() or time.time() > self.timeshowstart + self.playduration):
+                self.showaudionr += 1
+                self.showaudionr = self.showaudionr % len(self.list_of_aud)
+                if (self.most_recent_mode() and self.showaudionr % len(self.list_of_aud) == 0):
+                    self.change_state = True
+                    self.state = STATE_PIC
+                self.show()
+                
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
         self.label.configure(text=txt)
         
