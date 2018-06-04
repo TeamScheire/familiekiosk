@@ -14,6 +14,8 @@ STATE_AUD = 2
 
 import os
 import sys
+
+import subprocess
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
     import Tkinter
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
@@ -128,8 +130,8 @@ class TVbox():
         Gst.init(None)
         
         # you can also use display_frame = tkinter.Frame(window)
-        self.display_frame = tkinter.Canvas(self.root, width=self.w, height=self.h-self.h_label, bg="black",
-                                     highlightthickness=0)
+        self.display_frame = tkinter.Canvas(self.root, width=self.w, height=self.h-self.h_label,
+                                            bg="black", highlightthickness=0)
         self.display_frame.bind("<ButtonPress-3>", self.closefullscreen)
         self.display_frame.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
         self.frame_id = self.display_frame.winfo_id()
@@ -385,8 +387,9 @@ class TVbox():
                 self.hide_pic()
                 self.show_vid()
                 #show video
-                self.player.set_state(Gst.State.PLAYING)
+                #self.player.set_state(Gst.State.PLAYING)
                 self.change_state = False
+                subprocess.call(['omxplayer', testvid]) 
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
         self.label.configure(text=txt)
         
