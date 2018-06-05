@@ -17,7 +17,7 @@ TEST_VID = True
 import os
 import sys
 
-import subprocess
+import pexpect   # sudo apt-get install python-pexpect
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
     import Tkinter
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
@@ -277,16 +277,19 @@ class TVbox():
         # first stop playing something if needed
         if self.stopplayingaudio or (self.stopplayingvideo and not USE_EXTERNAL_VIDEO_PLAYER):
             #stop gstreamer
-            print ('STOPPING the current playing track on gstreamer')
-            self.player.set_state(Gst.State.READY)
-            self.player.set_state(Gst.State.NULL)
             if hasattr(self, 'player'):
+                print ('STOPPING the current playing track on gstreamer')
+                self.player.set_state(Gst.State.READY)
+                self.player.set_state(Gst.State.NULL)
                 del self.bus
                 del self.player
         elif self.stopplayingvideo and USE_EXTERNAL_VIDEO_PLAYER:
             # we need to kill the subprocess running the external vid ...
             if self.ext_process:
-                self.ext_process.kill()
+                #self.ext_process.kill()
+                # to kill omxplayer only sending CTRL-C seems to work:
+                self.ext_process.sendcontrol('c')
+                self.ext_process.close()
                 time.sleep(0.2)
                 self.ext_process = None
             
@@ -358,8 +361,8 @@ class TVbox():
             self.showvideonr = self.showvideonr % len(self.list_of_vid)
 
             if USE_EXTERNAL_VIDEO_PLAYER:
-                self.ext_process = subprocess.Popen(['omxplayer', 
-                                        self.list_of_vid[self.showvideonr]]) 
+                self.ext_process = pexpect.spawn('omxplayer ' +
+                                        self.list_of_vid[self.showvideonr]) 
             else:
                 #show video
                 if hasattr(self, 'player'):
@@ -400,9 +403,6 @@ class TVbox():
             self.showaudionr = self.showaudionr % len(self.list_of_aud)
             print('playing', self.showaudionr, self.list_of_aud[self.showaudionr])
 
-            #if USE_EXTERNAL_VIDEO_PLAYER:
-            #    subprocess.call(['omxplayer', self.list_of_aud[self.showaudionr]]) 
-            #else:
             if True:
                 #play audio
                 if hasattr(self, 'player'):
