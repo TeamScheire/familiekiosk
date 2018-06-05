@@ -12,7 +12,7 @@ STATE_PIC = 0
 STATE_VID = 1
 STATE_AUD = 2
 
-TEST_VID = False
+TEST_VID = True
 
 import os
 import sys
@@ -87,6 +87,8 @@ class TVbox():
         self.replybtnpressed = False
         self.nextbtnpressed = False
         self.prevbtnpressed = False
+        self.stopplayingvideo = False
+        self.stopplayingaudio = False
         
         self.root = tkinter.Tk()
         #self.root.attributes('-fullscreen', True)
@@ -99,6 +101,8 @@ class TVbox():
         self.root.bind('<Escape>', self.closefullscreen)
         self.root.bind('<Return>', self.closefullscreen)
         self.root.bind("<ButtonPress-1>", self.closefullscreen)
+        self.root.bind("<ButtonPress-2>", self.test_prev)
+        self.root.bind("<ButtonPress-3>", self.test_next)
         self.root.overrideredirect(True)
         # no window decoration to close the window! 
         self.root.geometry("%dx%d+0+0" % (self.w, self.h))
@@ -116,7 +120,9 @@ class TVbox():
         #canvas.configure(background='black')
         #canvas.bind("<Escape>", closefullscreen)
         #canvas.bind("<Return>", closefullscreen)
-        self.canvas.bind("<ButtonPress-3>", self.closefullscreen)
+        self.canvas.bind("<ButtonPress-1>", self.closefullscreen)
+        self.canvas.bind("<ButtonPress-2>", self.test_prev)
+        self.canvas.bind("<ButtonPress-3>", self.test_next)
         
         # set up the reply button
         if HAS_GPIO:
@@ -143,7 +149,9 @@ class TVbox():
         # you can also use display_frame = tkinter.Frame(window)
         self.display_frame = tkinter.Canvas(self.root, width=self.w, height=self.h-self.h_label,
                                             bg="black", highlightthickness=0)
-        self.display_frame.bind("<ButtonPress-3>", self.closefullscreen)
+        self.display_frame.bind("<ButtonPress-1>", self.closefullscreen)
+        self.display_frame.bind("<ButtonPress-2>", self.test_prev)
+        self.display_frame.bind("<ButtonPress-3>", self.test_next)
         self.display_frame.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
         self.frame_id = self.display_frame.winfo_id()
 
@@ -152,7 +160,7 @@ class TVbox():
         self.listvoices()
         
         if (TEST_VID):
-            self.state = STATE_AUD
+            self.state = STATE_VID
             self.change_state = True
 
         self.show()
@@ -265,6 +273,16 @@ class TVbox():
 
     def show(self):
         """ update what we show """
+        # first stop playing something if needed
+        if self.stopplayingaudio or (self.stopplayingvideo and not USE_EXTERNAL_VIDEO_PLAYER):
+            #stop gstreamer
+            print ('STOPPING the current playing track')
+            self.player.set_state(Gst.State.READY)
+            self.player.set_state(Gst.State.NULL)
+            if hasattr(self, 'player'):
+                del self.bus
+                del self.player
+            
         if not self.most_recent_mode():
             #we should only show pictures! 
             if self.state != STATE_PIC:
@@ -432,12 +450,22 @@ class TVbox():
         
         return False
 
+    def test_next(self, event):
+        self.nextbtnpressed = True
+        
+    def test_prev(self, event):
+        self.prevbtnpressed = True
+
     def is_do_next(self):
         """
         We do next if the next button is released.
         This returns True if this is the case, False otherwise
         """
         if not NEXT_BUTTON:
+            # 3rd mouse button via test_next might have been used
+            if self.nextbtnpressed:
+                self.nextbtnpressed = False
+                return True
             return False
         
         if self.btn_pressed(NEXT_PIN) and not self.nextbtnpressed:
@@ -458,6 +486,10 @@ class TVbox():
         This returns True if this is the case, False otherwise
         """
         if not PREV_BUTTON:
+            # 2rd mouse button via test_prev might have been used
+            if self.prevbtnpressed:
+                self.prevbtnpressed = False
+                return True
             return False
         
         if self.btn_pressed(PREV_PIN) and not self.prevbtnpressed:
@@ -541,13 +573,17 @@ class TVbox():
         
         # update the label, show new image if needed
         now = time.strftime("%H:%M:%S")
+        doprev = self.is_do_prev()
+        donext = self.is_do_next()
+        self.stopplayingvideo = False
+        self.stopplayingaudio = False
         if self.state == STATE_PIC:
             if self.change_state:
                 self.hide_vid()
                 self.show_pic()
                 self.change_state = False
             # update image if needed
-            if (self.is_do_prev()):
+            if (doprev):
                 if self.showimagenr > 0:
                     self.showimagenr -= 1
                 else:
@@ -560,7 +596,7 @@ class TVbox():
                         elif len(self.list_of_vid):
                             self.state = STATE_VID
                 self.show()
-            elif (self.is_do_next() or time.time() > self.timeshowstart + SHOW_JPG_SEC):
+            elif (donext or time.time() > self.timeshowstart + SHOW_JPG_SEC):
                 self.showimagenr += 1
                 self.showimagenr = self.showimagenr % len(self.list_of_img)
                 if (self.most_recent_mode() and self.showimagenr % len(self.list_of_img) == 0):
@@ -575,7 +611,8 @@ class TVbox():
                 self.hide_pic()
                 self.show_vid()
                 
-            if (self.is_do_prev()):
+            if (doprev):
+                self.stopplayingvideo = True
                 if self.showvideonr > 0:
                     self.showvideonr -= 1
                 else:
@@ -585,7 +622,9 @@ class TVbox():
                         self.change_state = True
                         self.state = STATE_PIC
                 self.show()
-            elif (self.is_do_next() or time.time() > self.timeshowstart + self.playduration):
+            elif (donext or time.time() > self.timeshowstart + self.playduration):
+                if donext:
+                    self.stopplayingvideo = True
                 self.showvideonr += 1
                 self.showvideonr = self.showvideonr % len(self.list_of_vid)
                 if (self.most_recent_mode() and self.showvideonr % len(self.list_of_vid) == 0):
@@ -599,9 +638,10 @@ class TVbox():
         elif self.state == STATE_AUD:
             if self.change_state:
                 self.hide_pic()
-                self.show_vid()
+                self.hide_vid()
                 
-            if (self.is_do_prev()):
+            if (doprev):
+                self.stopplayingaudio = True
                 if self.showaudionr > 0:
                     self.showaudionr -= 1
                 else:
@@ -612,7 +652,9 @@ class TVbox():
                         else:
                             self.state = STATE_PIC
                 self.show()
-            elif (self.is_do_next() or time.time() > self.timeshowstart + self.playduration):
+            elif (donext or time.time() > self.timeshowstart + self.playduration):
+                if donext:
+                    self.stopplayingaudio = True
                 self.showaudionr += 1
                 self.showaudionr = self.showaudionr % len(self.list_of_aud)
                 if (self.most_recent_mode() and self.showaudionr % len(self.list_of_aud) == 0):
