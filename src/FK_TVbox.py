@@ -89,6 +89,7 @@ class TVbox():
         self.prevbtnpressed = False
         self.stopplayingvideo = False
         self.stopplayingaudio = False
+        self.ext_process = None
         
         self.root = tkinter.Tk()
         #self.root.attributes('-fullscreen', True)
@@ -276,12 +277,18 @@ class TVbox():
         # first stop playing something if needed
         if self.stopplayingaudio or (self.stopplayingvideo and not USE_EXTERNAL_VIDEO_PLAYER):
             #stop gstreamer
-            print ('STOPPING the current playing track')
+            print ('STOPPING the current playing track on gstreamer')
             self.player.set_state(Gst.State.READY)
             self.player.set_state(Gst.State.NULL)
             if hasattr(self, 'player'):
                 del self.bus
                 del self.player
+        elif self.stopplayingvideo and USE_EXTERNAL_VIDEO_PLAYER:
+            # we need to kill the subprocess running the external vid ...
+            if self.ext_process:
+                self.ext_process.kill()
+                time.sleep(0.2)
+                self.ext_process = None
             
         if not self.most_recent_mode():
             #we should only show pictures! 
@@ -335,7 +342,9 @@ class TVbox():
         imgHeight = int(imgHeight*ratio)
         pilImage = pilImage.resize((imgWidth, imgHeight), Image.ANTIALIAS)
         self.image = ImageTk.PhotoImage(pilImage)
-        imagesprite = self.canvas.create_image(self.w/2, (self.h-self.h_label)/2, image=self.image)
+        imagesprite = self.canvas.create_image(self.w/2, 
+                                               (self.h-self.h_label)/2, 
+                                               image=self.image)
 
     def showvideo(self):
         if self.currentvideo != self.showvideonr:
@@ -349,7 +358,8 @@ class TVbox():
             self.showvideonr = self.showvideonr % len(self.list_of_vid)
 
             if USE_EXTERNAL_VIDEO_PLAYER:
-                subprocess.Popen(['omxplayer', self.list_of_vid[self.showvideonr]]) 
+                self.ext_process = subprocess.Popen(['omxplayer', 
+                                        self.list_of_vid[self.showvideonr]]) 
             else:
                 #show video
                 if hasattr(self, 'player'):
