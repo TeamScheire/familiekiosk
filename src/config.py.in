@@ -1,6 +1,8 @@
 
 # the token of your bot obtained from Telegram
 TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+# the password required to listen to the chatgroup
+PASSWORD = "FK_TEST"
 
 MAX_JPG = 20       # how many recent pics to show at alarm time ? 
 SHOW_JPG_SEC = 20  # how many seconds to show an image
