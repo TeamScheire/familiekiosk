@@ -67,8 +67,8 @@ Zorg nu dat deze services gekend zijn bij systemd:
     sudo systemctl daemon-reload
     sudo systemctl enable fk_chatbot.service
     sudo systemctl enable fk_tvbox.service
-    service fk_chatbot start
-    service fk_tvbox start
+    sudo service fk_chatbot start
+    sudo service fk_tvbox start
 
 Je kan indien gewenst de status opvragen van deze services, bv via
 
@@ -76,7 +76,7 @@ Je kan indien gewenst de status opvragen van deze services, bv via
 
 Indien gecrasht, herstarten kan via bv
 
-    service fk_chatbot start
+    sudo service fk_chatbot start
 
 ## Constructie van de FamilieKiosk-doos
 
