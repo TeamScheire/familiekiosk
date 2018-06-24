@@ -1,5 +1,5 @@
 [Unit]
- Description=Telegram Maria Bot
+ Description=Family Kiosk System
  After=multi-user.target
 
 [Service]

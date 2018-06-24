@@ -1,12 +1,12 @@
 [Unit]
- Description=Telegram Maria Bot
+ Description=Telegram Family Chat Bot
  After=multi-user.target
 
 [Service]
  Type=idle
  Environment="DISPLAY=:0"
  Environment="XAUTHORITY=/home/pi/.Xauthority"
- ExecStart=/usr/bin/python /home/pi/familiekiosk/src/FK_Mariabot.py > /home/pi/familiekiosk/output_mariabot.log 2>&1
+ ExecStart=/usr/bin/python /home/pi/familiekiosk/src/FK_ChatBot.py > /home/pi/familiekiosk/output_chatbot.log 2>&1
 
 [Install]
  WantedBy=multi-user.target

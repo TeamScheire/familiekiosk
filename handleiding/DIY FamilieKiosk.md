@@ -20,7 +20,7 @@ De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando
 4. telegram python API: `sudo pip install python-telegram-bot --upgrade`
 5. screensaver config om deze uit te zetten: `sudo apt-get install xscreensaver`
 
-Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Preferences option -> Screensaver`
+Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`
 
 Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal:
 
@@ -30,12 +30,12 @@ Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onz
 of door de code te downloaden als zip van [bitbucket.org/blfsputnik/familiekiosk/downloads](https://bitbucket.org/blfsputnik/familiekiosk/downloads/), de zip te extracten, en op te slaan in `/home/pi`. Opgelet, hernoem de map als `familykiosk` na de unzip, dus
 
     cd
-    mv blfsputnik-familiekiosk-XXXX familykiosk
+    mv blfsputnik-familiekiosk-XXXX familiekiosk
     
 waarbij XXXX een code is van de gedownloadde zip.
 
 Op een Raspberry Pi 3B hebben we te weinig GPU processor kracht om video en audio te spelen met omxplayer. Om dit op te lossen doen we een wijziging in het bestand `/boot/config.txt` zoals beschreven in [hier](https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio):
-Open `/boot/config` bv met `nano /boot/config`, en voeg toe:
+Open `/boot/config.txt` bv met `sudo thonny /boot/config.txt`, en voeg toe:
 
     # sufficient gpu to run omxplayer
     gpu_mem=128
@@ -44,9 +44,9 @@ Reboot de Rasp om dit effect te laten nemen.
 
 Test de playback met volgende commando's in een terminal:
 
-    omxplayer /home/pi/familykiosk/src/video/testvideo.mp4
-    gst-launch-1.0 playbin uri=file:///home/pi/familykiosk/src/video/testvideo.mp4
-    gst-launch-1.0 playbin uri=file:///home/pi/familykiosk/src/voice/testvoice.ogg
+    omxplayer /home/pi/familiekiosk/src/video/dummy/testvideo.mp4
+    gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/video/dummy/testvideo.mp4
+    gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/voice/dummy/testvoice.ogg
 
 ## Autostart van de FamilieKiosk
 
@@ -54,27 +54,29 @@ Alle code is aanwezig op de Raspberry, nu moeten we nog zorgen dat het systeem a
 
 De nodige scripts zijn aanwezig in de broncode in de map systemd, en moeten verplaatst worden naar de map `/lib/systemd/system/`. Doe dus
 
-    sudo cp /home/pi/familiekiosk/systemd/fk_mariabot.service /lib/systemd/system/
+    sudo cp /home/pi/familiekiosk/systemd/fk_chatbot.service /lib/systemd/system/
     sudo cp /home/pi/familiekiosk/systemd/fk_tvbox.service /lib/systemd/system/
 
 en wijzig de toegang naar 644 zodat ze kunnen opgestart worden door systemd:
 
-    sudo chmod 644 /lib/systemd/system/fk_mariabot.service
+    sudo chmod 644 /lib/systemd/system/fk_chatbot.service
     sudo chmod 644 /lib/systemd/system/fk_tvbox.service
 
 Zorg nu dat deze services gekend zijn bij systemd:
 
     sudo systemctl daemon-reload
-    sudo systemctl enable fk_mariabot.service
+    sudo systemctl enable fk_chatbot.service
     sudo systemctl enable fk_tvbox.service
+    sudo service fk_chatbot start
+    sudo service fk_tvbox start
 
 Je kan indien gewenst de status opvragen van deze services, bv via
 
-    systemctl status fk_mariabot.service
+    systemctl status fk_chatbot.service
 
 Indien gecrasht, herstarten kan via bv
 
-    service fk_mariabot start
+    sudo service fk_chatbot start
 
 ## Constructie van de FamilieKiosk-doos
 
