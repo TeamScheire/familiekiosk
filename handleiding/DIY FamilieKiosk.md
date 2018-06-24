@@ -68,6 +68,14 @@ Zorg nu dat deze services gekend zijn bij systemd:
     sudo systemctl enable fk_mariabot.service
     sudo systemctl enable fk_tvbox.service
 
+Je kan indien gewenst de status opvragen van deze services, bv via
+
+    systemctl status fk_mariabot.service
+
+Indien gecrasht, herstarten kan via bv
+
+    service fk_mariabot start
+
 ## Constructie van de FamilieKiosk-doos
 
 De familiekiosk kan optioneel uitgebreid worden met drukknoppen en een buzzer. We voorzien code voor drukknop om vorige multimedia opnieuw te zien, om naar volgende multimedia te gaan, en om een antwoord/reactie te geven. Audio en video worden enkel voor een vast slot per dag getoond. De buzzer wordt gebruikt om aan te duiden dat dit slot start.
