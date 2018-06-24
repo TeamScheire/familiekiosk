@@ -9,6 +9,13 @@ SHOW_JPG_SEC = 20  # how many seconds to show an image
 MAX_VID = 20       # how many recent videos to show at alarm time ? 
 MAX_AUD = 20       # how many recent voice clips to show at alarm time ? 
 
+# At what time should most recent messages be shown? This lasts 30min
+ALARM_HOUR = 18
+ALARM_MIN = 0
+
+# do a one minute sound alarm? 
+ALARM_SET = True
+
 #send email of pictures you receive?
 SEND_EMAIL_OF_PICS = False
 
@@ -23,20 +30,16 @@ SmptPort = 587  # google: 465
 SmptServer = 'smtp.gmail.com' #localhost' # google: 'smtp.gmail.com'
 
 # is a reply button connected to the TVbox ?
-REPLY_BUTTON = False
+REPLY_BUTTON = True
 REPLY_PIN = 18
-NEXT_BUTTON = False
+NEXT_BUTTON = True
 NEXT_PIN = 17
-PREV_BUTTON = False
+PREV_BUTTON = True
 PREV_PIN = 23
 
 # is a button for an alarm connected? 
-BUZZER_PRESENT = False
+BUZZER_PRESENT = True
 BUZZER_PIN = 24
-# do a one minute alarm? When?
-ALARM_SET = True
-ALARM_HOUR = 18
-ALARM_MIN = 0
 
 USE_EXTERNAL_VIDEO_PLAYER = True
 # add to /boot/config.txt   https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio
