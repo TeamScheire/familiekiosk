@@ -40,10 +40,10 @@ Dat is het, je hebt nu een eigen chatbot aangemaakt!
 
 ## Familie Kiosk instellen
 
-De configuratie van de Kiosk is in bestand `/home/pi/familiekiosk/src/config.py`. Maak dit bestand aan door het basisbestand te kopieren. Je kan bestand `/home/pi/familiekiosk/src/config.py.in` openen met tekstverwerker `gedit` en opslaan als `config.py` in dezelfde map, of start een Terminal en gebruik de commando's:
+De configuratie van de Kiosk is in bestand `/home/pi/familiekiosk/src/config.py`. Maak dit bestand aan door het basisbestand te kopieren. Je kan bestand `/home/pi/familiekiosk/src/config.py.in` openen met tekstverwerker `thonny` en opslaan als `config.py` in dezelfde map, of start een Terminal en gebruik de commando's:
 
 	cp /home/pi/familiekiosk/src/config.py.in /home/pi/familiekiosk/src/config.py
-	gedit /home/pi/familiekiosk/src/config.py
+	thonny /home/pi/familiekiosk/src/config.py
 
 Bovenaan dit bestand moet je het __TOKEN__ van je chatbot geven, en een paswoord instellen van de chatbot:
 
