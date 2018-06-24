@@ -30,7 +30,7 @@ Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onz
 of door de code te downloaden als zip van [bitbucket.org/blfsputnik/familiekiosk/downloads](https://bitbucket.org/blfsputnik/familiekiosk/downloads/), de zip te extracten, en op te slaan in `/home/pi`. Opgelet, hernoem de map als `familykiosk` na de unzip, dus
 
     cd
-    mv blfsputnik-familiekiosk-XXXX familykiosk
+    mv blfsputnik-familiekiosk-XXXX familiekiosk
     
 waarbij XXXX een code is van de gedownloadde zip.
 
@@ -44,9 +44,9 @@ Reboot de Rasp om dit effect te laten nemen.
 
 Test de playback met volgende commando's in een terminal:
 
-    omxplayer /home/pi/familykiosk/src/video/testvideo.mp4
-    gst-launch-1.0 playbin uri=file:///home/pi/familykiosk/src/video/testvideo.mp4
-    gst-launch-1.0 playbin uri=file:///home/pi/familykiosk/src/voice/testvoice.ogg
+    omxplayer /home/pi/familiekiosk/src/video/dummy/testvideo.mp4
+    gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/video/dummy/testvideo.mp4
+    gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/voice/dummy/testvoice.ogg
 
 ## Autostart van de FamilieKiosk
 
