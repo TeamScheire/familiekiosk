@@ -111,6 +111,10 @@ De bekabeling is als volgt:
 ### De doos
 Maak een mooie doos om de drukknoppen te bevatten, alsook de buzzer. Plaats de Raspberri Pi naast de TV, en maak een kabel naar je doos met 6 jumper wires in (GND, 3.3V, GPIO24/23/18/17). Maak kabel lang genoeg zodat doos op een gemakkelijke plek kan gezet worden.
 
+Een voorbeeld gelasercutte doos is beschikbaar hieronder. Sla ze op als svg en pas aan naar eigen wensen:
+
+![Rasp Pi pins](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/lasercut/flexbox_v.1.3_4mmhout_v03.svg)
+
 ## Instellen van de FamilieKiosk. 
 
 De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://bitbucket.org/blfsputnik/familiekiosk/src/master/handleiding/FamilieKiosk%20Installeren.md).
