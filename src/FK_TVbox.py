@@ -12,7 +12,8 @@ STATE_PIC = 0
 STATE_VID = 1
 STATE_AUD = 2
 
-TEST_VID = True
+TEST_RECENT_MODE =  False # if true, always in alarm mode
+TEST_VID = False # show video's to test if video playback works
 
 import os
 import sys
@@ -83,6 +84,7 @@ class TVbox():
         self.list_of_img = []
         self.list_of_vid = []
         self.list_of_aud = []
+        self.playduration = 10
         self.timeshowstart = time.time()
         self.replybtnpressed = False
         self.nextbtnpressed = False
@@ -204,7 +206,7 @@ class TVbox():
         """
         In recent mode or not? recent mode is from Alarm to Alarm + 30 min
         """
-        if (TEST_VID): return True
+        if (TEST_RECENT_MODE or TEST_VID): return True
         #30 min after alarm time only recent images
         now = datetime.now()
         limit_min_start = ALARM_HOUR * 60 + ALARM_MIN
