@@ -83,3 +83,19 @@ Om berichten te sturen, voeg je jouw gemaakte chatbot, hier __TEST_FK_BOT__ geno
 ````
 
 Test nu de chatbot door een foto te sturen, of een video, of een audiofragment. Zie telegram documentie hoe dit te doen indien de interface niet duidelijk is.
+
+## Startfoto's opladen
+Het is niet nodig startfoto's op te laden, maar wel handig dat de Kiosk iets heeft om te tonen van bij het begin. Startfoto's kun je op een usb stick plaatsen. Ze dienen extensie `.jpg` te hebben. Niets anders wordt aanvaard! 
+
+Stop de usb stick in de Raspberry Pi, en copieer de foto's naar de map `/home/pi/familiekiosk/src/pics`. Deze foto's zullen getoond worden door de Kiosk. Opgelet, elke foto wordt enige tijd getoond. Zet dus ook niet teveel foto's op.
+
+## Ruimte vrijmaken
+Indien veel foto's, video's of audio naar de Kiosk gestuurd wordt, zal het nodig zijn na verloop van tijd ruimte vrij te maken. Connecteer een muis en toetsenbord aan de Raspberry Pi, en klik de linkermuisknop om de Kiosk te stoppen. 
+
+Start de bestandenbeheerder vanuit de top menubalk, en verwijder de oudste multimedia bestanden uit de mappen
+
+	/home/pi/familiekiosk/src/pics
+	/home/pi/familiekiosk/src/video
+	/home/pi/familiekiosk/src/voice
+	
+Je kan de multimedia verwijderen of op een stick plaatsen als backup. Opgelet, bij verwijderen, vergeet ook niet de vuilnisemmer (Wastebasket) te legen. Herstart de Raspberry hierna om de Kiosk terug te starten.
