@@ -20,7 +20,7 @@ De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando
 4. telegram python API: `sudo pip install python-telegram-bot --upgrade`
 5. screensaver config om deze uit te zetten: `sudo apt-get install xscreensaver`
 
-Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Preferences option -> Screensaver`
+Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`
 
 Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal:
 
@@ -35,7 +35,7 @@ of door de code te downloaden als zip van [bitbucket.org/blfsputnik/familiekiosk
 waarbij XXXX een code is van de gedownloadde zip.
 
 Op een Raspberry Pi 3B hebben we te weinig GPU processor kracht om video en audio te spelen met omxplayer. Om dit op te lossen doen we een wijziging in het bestand `/boot/config.txt` zoals beschreven in [hier](https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio):
-Open `/boot/config` bv met `nano /boot/config`, en voeg toe:
+Open `/boot/config.txt` bv met `sudo thonny /boot/config.txt`, en voeg toe:
 
     # sufficient gpu to run omxplayer
     gpu_mem=128
