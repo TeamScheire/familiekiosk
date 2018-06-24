@@ -21,20 +21,21 @@ We maken nu de chatbot. Log in op PC op telegram via [web.telegram.org](https://
 
 1. Praat met botfather door te klikken op volgende link: [web.telegram.org/#/im?p=@BotFather ](https://web.telegram.org/#/im?p=@BotFather)
 2. Vraag een nieuwe bot aan:
-
+```
 	/newbot
-
+```
 3. Je krijgt antwoord met de vraag een naam te geven. Geef nu de naam die je gekozen hebt
-
+```
 	TEST_FK_BOT
+```
 
 4. Je krijgt, als naam goedgekeurd wordt, als antwoord een __TOKEN__, welke je moet kopieren/opschrijven. Dit __TOKEN__ zul je moeten ingeven op de Raspberry Pi
 5. Je moet nu nog toelaten dat je bot alle berichten kan zien in een groep waar het deel van is. Volgende commandoreeks tik je daarvoor in, waarbij je opnieuw JOUW chatbot naam gebruikt ipv TEST_FK_BOT:
-
-	/setprivacy
+```
+    /setprivacy
 	@FK_Mariabot_JE_EIGEN_BOTNAAM!
 	Disable
-
+```
 Dat is het, je hebt nu een eigen chatbot aangemaakt! 
 
 ## Familie Kiosk instellen
@@ -57,9 +58,28 @@ De andere opties die je mogelijks wil wijzigen zijn:
 
 1. Als geen knoppen, wijzig dan de knop van __True__ in __False__ 
 2. Als geen buzzer, wijzig dan __BUZZER_PRESENT__ in __False__
-3. De tijd van het alarm staat op 18u. Dan zal voor 30 min laatste foto's, audio en video getoond worden. Om ander uur te kiezen, wijzig dit:
-
+3. De tijd van het alarm staat op 18u. Dan zal voor 30 min de meest recente foto's, audio en video getoond worden. Om ander uur te kiezen, wijzig dit:
+```
 	ALARM_HOUR = 18
 	ALARM_MIN = 0
+```
 	
-	
+Je kan nu de Raspberry Pi herstarten om de kiosk op te starten met de chatbot. 
+
+## Berichten sturen naar de Kiosk
+Om berichten te sturen, voeg je jouw gemaakte chatbot, hier __TEST_FK_BOT__ genoemd, toe aan een groep, of doe je er een rechtstreeks gesprek mee. Voor deze je berichten zal doorsturen naar de kiosk, moet je wel een keer het paswoord doorgeven. Doe dit als volgt:
+
+1. zoek op je chatbot en voeg hem toe
+
+![Chatbot zoeken](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/Telegram.png)
+
+2. test of de chatbox aan staat. Dit is het geval als de Raspberry Pi opgestart is. Indien niet, laat weten aan de eigenaar hem opnieuw in het stopcontact te steken! Je kan dit testen via het start commando in de chat waarop de chatbox met _Hi_ zal antwoorden:
+```
+	/start
+```
+3. Geef nu het paswoord via het __/secret__ commando, gevolgd door het paswoord welke je gekozen hebt. Hierna zal elke chat met multimedia een antwoord krijgen van de chatbot om aan te duiden dat die goed ontvangen werd
+```
+	/secret XXXXX_JOUW_GEHEIM_PASWOORD
+````
+
+Test nu de chatbot door een foto te sturen, of een video, of een audiofragment. Zie telegram documentie hoe dit te doen indien de interface niet duidelijk is.
