@@ -17,6 +17,10 @@ De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando
 1. Beeldverwerking: `sudo apt-get install python-imaging-tk`
 2. Button en buzzer support: `sudo apt-get install python-rpi.gpio python3-rpi.gpio`
 3. Gstreamer voor audio en video: `sudo apt-get install python-gst-1.0 gstreamer1.0-tools`
+4. telegram python API: `sudo pip install python-telegram-bot --upgrade`
+5. screensaver config om deze uit te zetten: `sudo apt-get install xscreensaver`
+
+Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Preferences option -> Screensaver`
 
 Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal:
 
