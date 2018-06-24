@@ -673,7 +673,11 @@ class TVbox():
                 self.show()
                 
         txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
-        self.label.configure(text=txt)
+        if self.state == STATE_VID and USE_EXTERNAL_VIDEO_PLAYER:
+            #label will be under the video most of the time, so show nothing!
+            self.label.configure(text="")
+        else:
+            self.label.configure(text=txt)
         
         # check time to see if we need to do alarm
         if BUZZER_PRESENT and ALARM_SET:
