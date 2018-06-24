@@ -48,6 +48,35 @@ Test de playback met volgende commando's in een terminal:
 
 De familiekiosk kan optioneel uitgebreid worden met drukknoppen en een buzzer. We voorzien code voor drukknop om vorige multimedia opnieuw te zien, om naar volgende multimedia te gaan, en om een antwoord/reactie te geven. Audio en video worden enkel voor een vast slot per dag getoond. De buzzer wordt gebruikt om aan te duiden dat dit slot start.
 
+### Componenten
+We gebruiken volgende componenten:
+
+1. Een YL44 buzzer ![YL44 buzzer](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/YL44.png)
+2. Arcade drukknoppen. Bv van [arcadewinkel](https://www.bol.com/nl/p/arcadewinkel-concave-classic-arcade-drukknoppen-mixed/9200000079501752/) ![Drukknoppen](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/arcade_btns.jpg)
+3. Jumper wires and connectors
+4. lasercut enclosure
+
+### Bekabeling
+De Raspberry Pi 3B heeft aan de rechterkant pinnen waarop we componenten kunnen aansluiten. Deze hebben volgende nummering:
+
+![Rasp Pi pins](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/RaspPi3B_pinlayout.png)
+
+De rechterbovenhoek van deze figuur is ook de rechterbovenhoek van de Rasp Pi als je er van boven opkijkt. 
+
+De bekabeling is als volgt: 
+
+1. Buzzer GND pin verbinden we met een GND pin, bv pin# 05
+2. Buzzer VCC pin verbinden we met de 3.3V pin, dus pin# 01
+3. Buzzer I/O pin verbinden we met GPIO24, dus pin# 18
+4. Alle drukknoppen zijn aan 1 kant verbonden met een GND pint, bv ook pin# 05
+5. De andere kant van de drukknop gaat naar een GPIO pin. We gebruiken volgende: 
+    a. Reply knop op GPIO18, dus pin# 12
+    b. Next  knop op GPIO17, dus pin# 11
+    c. Previous knop op GPIO23, dus pin# 16
+
+### De doos
+Maak een mooie doos om de drukknoppen te bevatten, alsook de buzzer. Plaats de Raspberri Pi naast de TV, en maak een kabel naar je doos met 6 jumper wires in (GND, 3.3V, GPIO24/23/18/17). Maak kabel lang genoeg zodat doos op een gemakkelijke plek kan gezet worden.
+
 ## Instellen van de FamilieKiosk. 
 
 De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://bitbucket.org/blfsputnik/familiekiosk/src/master/handleiding/FamilieKiosk%20Installeren.md).
