@@ -44,6 +44,26 @@ Test de playback met volgende commando's in een terminal:
     gst-launch-1.0 playbin uri=file:///home/pi/familykiosk/src/video/testvideo.mp4
     gst-launch-1.0 playbin uri=file:///home/pi/familykiosk/src/voice/testvoice.ogg
 
+## Autostart van de FamilieKiosk
+
+Alle code is aanwezig op de Raspberry, nu moeten we nog zorgen dat het systeem automatisch de Kiosk start bij opstarten. We gebruiken `systemd` services om te autostarten.
+
+De nodige scripts zijn aanwezig in de broncode in de map systemd, en moeten verplaatst worden naar de map `/lib/systemd/system/`. Doe dus
+
+    sudo cp /home/pi/familiekiosk/systemd/fk_mariabot.service /lib/systemd/system/
+    sudo cp /home/pi/familiekiosk/systemd/fk_tvbox.service /lib/systemd/system/
+
+en wijzig de toegang naar 644 zodat ze kunnen opgestart worden door systemd:
+
+    sudo chmod 644 /lib/systemd/system/fk_mariabot.service
+    sudo chmod 644 /lib/systemd/system/fk_tvbox.service
+
+Zorg nu dat deze services gekend zijn bij systemd:
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable fk_mariabot.service
+    sudo systemctl enable fk_tvbox.service
+
 ## Constructie van de FamilieKiosk-doos
 
 De familiekiosk kan optioneel uitgebreid worden met drukknoppen en een buzzer. We voorzien code voor drukknop om vorige multimedia opnieuw te zien, om naar volgende multimedia te gaan, en om een antwoord/reactie te geven. Audio en video worden enkel voor een vast slot per dag getoond. De buzzer wordt gebruikt om aan te duiden dat dit slot start.
