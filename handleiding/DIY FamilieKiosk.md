@@ -23,10 +23,10 @@ De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando
 
 Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`
 
-Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal:
+Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal waarbij je __BITBUCKETUSERNAME__ vervangt door je eigen username op [bitbucket.org](http://bitbucket.org):
 
     cd
-    git clone https://ingegno@bitbucket.org/blfsputnik/familiekiosk.git 
+    git clone https://BITBUCKETUSERNAME@bitbucket.org/blfsputnik/familiekiosk.git 
 
 of door de code te downloaden als zip van [bitbucket.org/blfsputnik/familiekiosk/downloads](https://bitbucket.org/blfsputnik/familiekiosk/downloads/), de zip te extracten, en op te slaan in `/home/pi`. Opgelet, hernoem de map als `familykiosk` na de unzip, dus
 
