@@ -54,27 +54,29 @@ Alle code is aanwezig op de Raspberry, nu moeten we nog zorgen dat het systeem a
 
 De nodige scripts zijn aanwezig in de broncode in de map systemd, en moeten verplaatst worden naar de map `/lib/systemd/system/`. Doe dus
 
-    sudo cp /home/pi/familiekiosk/systemd/fk_mariabot.service /lib/systemd/system/
+    sudo cp /home/pi/familiekiosk/systemd/fk_chatbot.service /lib/systemd/system/
     sudo cp /home/pi/familiekiosk/systemd/fk_tvbox.service /lib/systemd/system/
 
 en wijzig de toegang naar 644 zodat ze kunnen opgestart worden door systemd:
 
-    sudo chmod 644 /lib/systemd/system/fk_mariabot.service
+    sudo chmod 644 /lib/systemd/system/fk_chatbot.service
     sudo chmod 644 /lib/systemd/system/fk_tvbox.service
 
 Zorg nu dat deze services gekend zijn bij systemd:
 
     sudo systemctl daemon-reload
-    sudo systemctl enable fk_mariabot.service
+    sudo systemctl enable fk_chatbot.service
     sudo systemctl enable fk_tvbox.service
+    service fk_chatbot start
+    service fk_tvbox start
 
 Je kan indien gewenst de status opvragen van deze services, bv via
 
-    systemctl status fk_mariabot.service
+    systemctl status fk_chatbot.service
 
 Indien gecrasht, herstarten kan via bv
 
-    service fk_mariabot start
+    service fk_chatbot start
 
 ## Constructie van de FamilieKiosk-doos
 
