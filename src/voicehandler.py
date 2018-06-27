@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 BASE_FILE_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/voice/{}_{}.ogg'
 
 from config import *
+from libFK import free_Mb
 
 class VoiceExtended():
     def __init__(self, message):
@@ -76,6 +77,9 @@ class VoiceExtended():
 
     def send(self):
         self.message.reply_text("Je spraakbericht is ontvangen", 
+                                reply_to_message_id=self.reply_to_message_id)
+        if free_Mb() < 80:
+            self.message.reply_text("Opgelet, slechts {}Mb vrije ruimte!".format(free_Mb()),
                                 reply_to_message_id=self.reply_to_message_id)
 
     def download_send(self):

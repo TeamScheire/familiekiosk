@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 BASE_FILE_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/{}_{}.jpg'
 
 from config import *
+from libFK import free_Mb
 
 EMAIL = ""
 
@@ -130,6 +131,10 @@ class PictureExtended(Picture):
         with open(self.compressed_file_path, 'rb') as file:
             #we reply in telegram with the photo as feedback
             self.message.reply_photo(file, reply_to_message_id=self.reply_to_message_id)
+        if free_Mb() < 80:
+            self.message.reply_text("Opgelet, slechts {}Mb vrije ruimte!".format(free_Mb()),
+                                reply_to_message_id=self.reply_to_message_id)
+
         #we send to photo frame email
         if SEND_EMAIL_OF_PICS:
             send_mail(self.compressed_file_path, self.message)
