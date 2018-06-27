@@ -387,7 +387,7 @@ class TVbox():
                 self.img_user = "{} {}".format(config.get("user", "first_name"),
                                            config.get("user", "last_name"))
                 self.img_day = config.get("message", "day")
-                self.playduration = config.getfloat("message", "duration") + 3
+                self.playduration = config.getfloat("message", "duration") + 5
             else:
                 self.img_user = ''
                 self.img_day = ''
@@ -427,7 +427,7 @@ class TVbox():
                 self.img_user = "{} {}".format(config.get("user", "first_name"),
                                            config.get("user", "last_name"))
                 self.img_day = config.get("message", "day")
-                self.playduration = config.getfloat("message", "duration") + 3
+                self.playduration = config.getfloat("message", "duration") + 5
             else:
                 self.img_user = ''
                 self.img_day = ''
