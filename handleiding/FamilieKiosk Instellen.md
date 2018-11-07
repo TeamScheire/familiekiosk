@@ -7,7 +7,7 @@ Je hebt een familiekiosk ontvangen. Dit omvat een doos met knoppen en een Raspbe
 
 De Raspberry Pi start op, en toont onmiddelijk de Kiosk met de standaard foto. Om de Kiosk af te sluiten klik je op de __Linkermuis__ knop. Je bekomt dan de desktop: 
 
-![Raspian](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/raspbian.png)
+![Raspian](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/raspbian.png)
 
 ## Wifi Netwerk instellen
 
@@ -71,7 +71,7 @@ Om berichten te sturen, voeg je jouw gemaakte chatbot, hier __TEST_FK_BOT__ geno
 
 1. zoek op je chatbot en voeg hem toe
 
-![Chatbot zoeken](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/Telegram.png)
+![Chatbot zoeken](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/Telegram.png)
 
 2. test of de chatbox aan staat. Dit is het geval als de Raspberry Pi opgestart is. Indien niet, laat weten aan de eigenaar hem opnieuw in het stopcontact te steken! Je kan dit testen via het start commando in de chat waarop de chatbox met _Hi_ zal antwoorden:
 ```
