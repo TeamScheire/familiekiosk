@@ -21,7 +21,7 @@ De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando
 5. pexpect API: `sudo pip install pexpect`
 6. screensaver config om deze uit te zetten: `sudo apt-get install xscreensaver`
 
-Zet onmiddellijk de screensaver uit. Je doet dit via via `Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`
+Zet onmiddellijk de screensaver uit. Je doet dit via via `Start menu->Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`. Je ziet daar een optie __Modus__, waar je uitschakelen kan kiezen als modus.
 
 Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal:
 
@@ -31,9 +31,7 @@ Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onz
 of door de code te downloaden als zip van [https://github.com/TeamScheire/familiekiosk/](https://github.com/TeamScheire/familiekiosk/archive/master.zip), de zip te extracten, en op te slaan in `/home/pi`. Opgelet, hernoem de map als `familykiosk` na de unzip, dus
 
     cd
-    mv MAPNAAM-familiekiosk-XXXX familiekiosk
-    
-waarbij XXXX een code is van de gedownloadde zip.
+    mv familiekiosk-master familiekiosk
 
 Op een Raspberry Pi 3B hebben we te weinig GPU processor kracht om video en audio te spelen met omxplayer. Om dit op te lossen doen we een wijziging in het bestand `/boot/config.txt` zoals beschreven in [hier](https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio):
 Open `/boot/config.txt` bv met `sudo thonny /boot/config.txt`, en voeg toe:
@@ -86,15 +84,15 @@ De familiekiosk kan optioneel uitgebreid worden met drukknoppen en een buzzer. W
 ### Componenten
 We gebruiken volgende componenten:
 
-1. Een YL44 buzzer ![YL44 buzzer](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/YL44.png)
-2. Arcade drukknoppen. Bv van [arcadewinkel](https://www.bol.com/nl/p/arcadewinkel-concave-classic-arcade-drukknoppen-mixed/9200000079501752/) ![Drukknoppen](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/arcade_btns.jpg)
+1. Een YL44 buzzer ![YL44 buzzer](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/YL44.png)
+2. Arcade drukknoppen. Bv van [arcadewinkel](https://www.bol.com/nl/p/arcadewinkel-concave-classic-arcade-drukknoppen-mixed/9200000079501752/) ![Drukknoppen](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/arcade_btns.jpg)
 3. Jumper wires and connectors
 4. lasercut enclosure
 
 ### Bekabeling
 De Raspberry Pi 3B heeft aan de rechterkant pinnen waarop we componenten kunnen aansluiten. Deze hebben volgende nummering:
 
-![Rasp Pi pins](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/handleiding/img/RaspPi3B_pinlayout.png)
+![Rasp Pi pins](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/RaspPi3B_pinlayout.png)
 
 De rechterbovenhoek van deze figuur is ook de rechterbovenhoek van de Rasp Pi als je er van boven opkijkt. 
 
@@ -114,8 +112,8 @@ Maak een mooie doos om de drukknoppen te bevatten, alsook de buzzer. Plaats de R
 
 Een voorbeeld gelasercutte doos is beschikbaar hieronder. Sla ze op als svg en pas aan naar eigen wensen:
 
-![Rasp Pi pins](https://bitbucket.org/blfsputnik/familiekiosk/raw/master/lasercut/flexbox_v.1.3_4mmhout_v03.svg)
+![Rasp Pi pins](https://github.com/TeamScheire/familiekiosk/blob/master/lasercut/flexbox_v.1.3_4mmhout_v03.svg)
 
 ## Instellen van de FamilieKiosk. 
 
-De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://bitbucket.org/blfsputnik/familiekiosk/src/master/handleiding/FamilieKiosk%20Installeren.md).
+De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/FamilieKiosk%20Installeren.md).
