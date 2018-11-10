@@ -115,11 +115,15 @@ De bekabeling is als volgt:
 1. Buzzer GND pin verbinden we met een GND pin, bv pin# 05
 2. Buzzer VCC pin verbinden we met de 3.3V pin, dus pin# 01
 3. Buzzer I/O pin verbinden we met GPIO24, dus pin# 18
-4. Alle drukknoppen zijn aan 1 kant verbonden met een GND pint, bv ook pin# 05
+4. Alle drukknoppen zijn aan 1 kant verbonden met een GND pin, bv ook pin# 05
 5. De andere kant van de drukknop gaat naar een GPIO pin. We gebruiken volgende: 
-    a. Reply knop op GPIO18, dus pin# 12
-    b. Next  knop op GPIO17, dus pin# 11
-    c. Previous knop op GPIO23, dus pin# 16
+    1. Reply knop op GPIO18, dus pin# 12
+    2. Next  knop op GPIO17, dus pin# 11
+    3. Previous knop op GPIO23, dus pin# 16
+    
+Je hebt dus een stekker met 6 draden nodig. Schematisch is de bekabeling:
+
+![Rasp Pi connecties](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/RPi_Connectie.png)
 
 ### De doos
 Maak een mooie doos om de drukknoppen te bevatten, alsook de buzzer. Plaats de Raspberri Pi naast de TV, en maak een kabel naar je doos met 6 jumper wires in (GND, 3.3V, GPIO24/23/18/17). Maak kabel lang genoeg zodat doos op een gemakkelijke plek kan gezet worden.
