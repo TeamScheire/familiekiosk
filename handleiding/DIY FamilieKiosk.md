@@ -5,9 +5,12 @@ In deze handleiding leggen we uit hoe je een FamilieKiosk kunt bouwen. De Kiosk 
 ## Set up Raspberry Pi
 We gebruiken een Raspberry Pi 3B, welkje je bv in pakket kunt kopen bij [Velleman](https://www.velleman.eu/products/view/?id=435866)
 
-Zo'n pakket komt met een lege microSD kaart, welke we moeten voorbereiden. We installeren er een linux OS op, zie de [software guide](https://www.raspberrypi.org/learning/software-guide/) voor meer info. Download de linux OS Raspian als een `.iso` bestand vanaf de [download pagina Raspian](https://www.raspberrypi.org/downloads/raspbian/)
+Zo'n pakket komt met een lege microSD kaart, welke we moeten voorbereiden. We installeren er een linux OS op, zie de [software guide](https://www.raspberrypi.org/learning/software-guide/) voor meer info. Download de linux OS Raspbian als een `.iso` of `.zip` bestand vanaf de [download pagina Raspbian](https://www.raspberrypi.org/downloads/raspbian/). De zip dien je de extraheren met een moderne unzipper. De FamilieKiosk is gestest met
 
-Download nu `Etcher` voor jouw PC van [etcher.io/](https://etcher.io/). Als gedownload, installeer het, en start Etcher. Selecteer de Raspian .iso die je gedownload hebt in Etcher, selecteer de microSD kaart als drager, en druk op `Flash`. Wacht tot het gedaan is, en je hebt nu je harde schijf voor je Raspberry Pi klaar.
+* 2018-04-18-raspbian-stretch.zip
+* 2018-10-09-raspbian-stretch.zip
+
+Download nu `Etcher` voor jouw PC van [etcher.io/](https://etcher.io/). Als gedownload, installeer het, en start Etcher. Selecteer de Raspbian .iso die je gedownload hebt in Etcher, selecteer de microSD kaart als drager, en druk op `Flash`. Wacht tot het gedaan is, en je hebt nu je harde schijf voor je Raspberry Pi klaar.
 
 Start de Rasp Pi met de [hardware guide](https://www.raspberrypi.org/learning/hardware-guide/). De Rasp zou moeten werken en je een linux desktop tonen. 
 
