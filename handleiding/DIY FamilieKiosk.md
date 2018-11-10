@@ -32,13 +32,13 @@ Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onz
     cd
     git clone https://github.com/TeamScheire/familiekiosk.git 
 
-of door de code te downloaden als zip van [https://github.com/TeamScheire/familiekiosk/](https://github.com/TeamScheire/familiekiosk/archive/master.zip), de zip te extracten, en op te slaan in `/home/pi`. Opgelet, hernoem de map als `familykiosk` na de unzip, dus
+of door de code te downloaden als zip van [https://github.com/TeamScheire/familiekiosk/](https://github.com/TeamScheire/familiekiosk/archive/master.zip), de zip te extracten, en op te slaan in `/home/pi`. Opgelet, hernoem de map als `familykiosk` na de unzip, dus bv indien naam map `familiekiosk-master` is:
 
     cd
     mv familiekiosk-master familiekiosk
 
 Op een Raspberry Pi 3B hebben we te weinig GPU processor kracht om video en audio te spelen met omxplayer. Om dit op te lossen doen we een wijziging in het bestand `/boot/config.txt` zoals beschreven in [hier](https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio):
-Open `/boot/config.txt` bv met `sudo thonny /boot/config.txt`, en voeg toe:
+Open `/boot/config.txt` bv met `sudo thonny /boot/config.txt`, en voeg onderaan aan dit bestand toe:
 
     # sufficient gpu to run omxplayer
     gpu_mem=128
@@ -65,13 +65,15 @@ en wijzig de toegang naar 644 zodat ze kunnen opgestart worden door systemd:
     sudo chmod 644 /lib/systemd/system/fk_chatbot.service
     sudo chmod 644 /lib/systemd/system/fk_tvbox.service
 
-Zorg nu dat deze services gekend zijn bij systemd:
+Zorg nu dat deze services gekend zijn bij systemd door 1 na 1 volgende commando's uit te voeren:
 
     sudo systemctl daemon-reload
     sudo systemctl enable fk_chatbot.service
     sudo systemctl enable fk_tvbox.service
     sudo service fk_chatbot start
     sudo service fk_tvbox start
+
+Op dit moment zullen deze services nog niet werken omdat je de chatbox nog niet geconfigureerd hebt! Geen zorgen, dat doen we straks.
 
 Je kan indien gewenst de status opvragen van deze services, bv via
 
@@ -120,4 +122,4 @@ Een voorbeeld gelasercutte doos is beschikbaar hieronder. Sla ze op als svg en p
 
 ## Instellen van de FamilieKiosk. 
 
-De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/FamilieKiosk%20Installeren.md).
+De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/FamilieKiosk%20Instellen.md).
