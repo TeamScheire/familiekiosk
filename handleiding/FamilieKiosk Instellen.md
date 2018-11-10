@@ -1,3 +1,5 @@
+__Disclaimer:__ De FamilieKiosk gebruikt [Telegram](https://web.telegram.org), en werkt dus slechts zolang de API van `Telegram` niet wijzigt en `Telegram` dit type gebruik toelaat. We doen ons best ondersteuning te bieden, maar kunnen hiertoe niet verplicht worden.
+
 Je hebt een familiekiosk ontvangen. Dit omvat een doos met knoppen en een Raspberry Pi. Connecteer de delen als volgt:
 
 1. Klik de kabel van de familiekiosk doos met knoppen aan de Raspberry Pi via de connector. 
