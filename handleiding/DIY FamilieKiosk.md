@@ -25,7 +25,7 @@ De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando
 5. pexpect API: `sudo pip install pexpect`
 6. screensaver config om deze uit te zetten: `sudo apt-get install xscreensaver`
 
-Zet onmiddellijk de screensaver uit. Je doet dit via via `Start menu->Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`. Je ziet daar een optie __Modus__, waar je uitschakelen kan kiezen als modus.
+Zet onmiddellijk de screensaver uit (mogelijks lukt dat maar na een reboot). Je doet dit via via `Start menu->Voorkeuren->Schermbeveiliging` of indien Engelse versie via `Start menu -> Preferences -> Screensaver`. Je ziet daar een optie __Modus__, waar je uitschakelen kan kiezen als modus.
 
 Vervolgens heb je de FamilieKiosk code nodig. Hiervoor maak je een kopie van onze code op een van volgende twee manieren. Via een clone van de code, als volgt in een terminal:
 
@@ -75,13 +75,21 @@ Zorg nu dat deze services gekend zijn bij systemd door 1 na 1 volgende commando'
 
 Op dit moment zullen deze services nog niet werken omdat je de chatbox nog niet geconfigureerd hebt! Geen zorgen, dat doen we straks.
 
-Je kan indien gewenst de status opvragen van deze services, bv via
+Je kan indien gewenst de status opvragen van deze services, bv om Telegram chats te monitoren:
 
     systemctl status fk_chatbot.service
+
+en voor de tvbox app:
+
+    systemctl status fk_tvbox.service 
 
 Indien gecrasht, herstarten kan via bv
 
     sudo service fk_chatbot start
+
+of om de tvbox te herstarten:
+
+    sudo service fk_tvbox start
 
 ## Constructie van de FamilieKiosk-doos
 
