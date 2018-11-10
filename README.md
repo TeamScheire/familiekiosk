@@ -1,5 +1,7 @@
 # FamilieKiosk
 
+__Disclaimer:__ De FamilieKiosk gebruikt [Telegram](https://web.telegram.org), en werkt dus slechts zolang de API van `Telegram` niet wijzigt en `Telegram` dit type gebruik toelaat. We doen ons best ondersteuning te bieden, maar kunnen hiertoe niet verplicht worden.
+
 De `FamilieKiosk` is een simpele manier om verbonden zijn met familie vanop een afstand. Ideaal voor ouderen die wel op de hoogte willen zijn maar niet sociale media gebruiken.
 
 The `FamilieKiosk` is a simple way to be connected with family from a distance. Ideal for elders who want to keep contact with family but don't use social media. 
