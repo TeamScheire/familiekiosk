@@ -86,6 +86,11 @@ Om berichten te sturen, voeg je jouw gemaakte chatbot, hier __TEST_FK_BOT__ geno
 
 Test nu de chatbot door een foto te sturen, of een video, of een audiofragment. Zie telegram documentie hoe dit te doen indien de interface niet duidelijk is.
 
+## Beperkingen
+
+1. Vooraleer de tvbox update en de __Next__ en __Previous__ knoppen werken moeten er twee foto's aanwezig zijn bij het opstarten. Bij slechts 1 foto blijft steeds die ene foto te zien. Bug [#1](https://github.com/TeamScheire/familiekiosk/issues/1)
+2. Een kabel is nodig van de knoppenbox naar de Raspberry Pi bij de TV, kan dat niet zonder? Ja. Dan moet bv een nodeMCU en een batterij in de knoppenbox gestopt worden en via WiFi of bluetooth of IR gewerkt worden. Patches welkom, maar moet wel __eenvoudig__ blijven: connectie semi automatisch, batterij vervangen eenvoudig, ...
+
 ## Startfoto's opladen
 Het is niet nodig startfoto's op te laden, maar wel handig dat de Kiosk iets heeft om te tonen van bij het begin. Startfoto's kun je op een usb stick plaatsen. Ze dienen extensie `.jpg` te hebben. Niets anders wordt aanvaard! 
 
