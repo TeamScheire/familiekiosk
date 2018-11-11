@@ -132,6 +132,11 @@ Een voorbeeld gelasercutte doos is beschikbaar hieronder. Sla ze op als svg en p
 
 ![Rasp Pi pins](https://github.com/TeamScheire/familiekiosk/blob/master/lasercut/flexbox_v.1.3_4mmhout_v03.svg)
 
+In deze doos stop je de buzzer, en er is plaats voorzien voor 3 drukknoppen. De bedrading van de drukknoppen is als volgt:
+
+![flexbox pushbuttons](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/bedradingKnoppen.png)
+
+
 ## Instellen van de FamilieKiosk. 
 
 De constructie en installatie is af. Dit is wat rechtstreeks van [Ingegno](http://ingegno.be/) kan bekomen worden. Nu dien je de FamilieKiosk in te stellen. Zie de [aparte installatie handleiding](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/FamilieKiosk%20Instellen.md).
