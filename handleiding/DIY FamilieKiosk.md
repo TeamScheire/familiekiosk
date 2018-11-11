@@ -134,8 +134,7 @@ Een voorbeeld gelasercutte doos is beschikbaar hieronder. Sla ze op als svg en p
 
 In deze doos stop je de buzzer, en er is plaats voorzien voor 3 drukknoppen. De bedrading van de drukknoppen is als volgt:
 
-![flexbox pushbuttons](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/bedradingKnoppen.png)
-
+<img src="https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/bedradingKnoppen.png" alt="flexbox pushbuttons" width="200">
 
 ## Instellen van de FamilieKiosk. 
 
