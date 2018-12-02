@@ -16,7 +16,12 @@ Download nu `Etcher` voor jouw PC van [etcher.io/](https://etcher.io/). Als gedo
 Start de Rasp Pi met de [hardware guide](https://www.raspberrypi.org/learning/hardware-guide/). De Rasp zou moeten werken en je een linux desktop tonen. 
 
 ## Installeer nodige software op Raspberry Pi
-De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando's gegeven als `commando` om de nodige software te installeren:
+
+Vooraleer je de familiekiosk zelf kan installeren moet je een aantal ondersteunende programmas installeren. Hiervoor moet je de Raspbian Terminal gebruiken. Je kan de terminal opstarten met het zwarte icoon, in de menubalk links bovenaan.
+
+![Raspbian Terminal Icoon](img/Raspbian-terminal-icoon.png)
+
+Druk de commando's gegeven als `commando` om de nodige software te installeren:
 
 1. Beeldverwerking: `sudo apt-get install python-imaging-tk`
 2. Button en buzzer support: `sudo apt-get install python-rpi.gpio python3-rpi.gpio`
