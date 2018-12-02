@@ -9,6 +9,7 @@ Zo'n pakket komt met een lege microSD kaart, welke we moeten voorbereiden. We in
 
 * 2018-04-18-raspbian-stretch.zip
 * 2018-10-09-raspbian-stretch.zip
+* 2018-11-13-raspbian-stretch-full.zip
 
 Download nu `Etcher` voor jouw PC van [etcher.io/](https://etcher.io/). Als gedownload, installeer het, en start Etcher. Selecteer de Raspbian .iso die je gedownload hebt in Etcher, selecteer de microSD kaart als drager, en druk op `Flash`. Wacht tot het gedaan is, en je hebt nu je harde schijf voor je Raspberry Pi klaar.
 
@@ -50,6 +51,8 @@ Test de playback met volgende commando's in een terminal:
     omxplayer /home/pi/familiekiosk/src/video/dummy/testvideo.mp4
     gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/video/dummy/testvideo.mp4
     gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/voice/dummy/testvoice.ogg
+
+Wanneer je foutmeldingen krijgt zoals "Pipeline doesn't want to pause." of "Pipeline wil niet pauseren" bij het uitvoeren van de laatste twee commando's, kijk dan zeker na of je het commando wel juist hebt ingevoerd. Let vooral op uri in plaats van url, het : symbool na file en de daarop volgende drie / symbolen.
 
 ## Autostart van de FamilieKiosk
 
