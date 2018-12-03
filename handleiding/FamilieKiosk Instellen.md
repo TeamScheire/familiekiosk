@@ -19,7 +19,7 @@ De Raspberry Pi beschikt over WiFi welke we gebruiken om met het internet te con
 
 De Kiosk werkt via een chatbot op Telegram. Elke Kiosk moet zijn eigen _geheime_ chatbot hebben. Je dient dus een chatbot aan te maken, en te configureren op je FamilieKiosk. Installeer `Telegram` op je GSM. Maak ook een login op [telegram.org](https://telegram.org/). 
 
-We maken nu de chatbot. Log in op PC op telegram via [web.telegram.org](https://web.telegram.org). We praten met de chatbot __botfather__ om een eigen nieuwe chatbot te maken. Kies een goede naam hiervoor, in deze handleiding gebruiken we __TEST_FK_bot__. Wijzig dit door je eigen naam!
+We maken nu de chatbot. Je kan hiervoor gelijk welke browser gebruiken, maar het is handig als je dit meteen op de Raspberri Pi zelf doet. Je kan de browser starten met het wereldbol symbool in het menu linksboven. Log in op telegram via [web.telegram.org](https://web.telegram.org). We praten met de chatbot __botfather__ om een eigen nieuwe chatbot te maken. Kies een goede naam hiervoor, in deze handleiding gebruiken we __TEST_FK_bot__. Wijzig dit door je eigen naam!
 
 1. Praat met botfather door te klikken op volgende link: [web.telegram.org/#/im?p=@BotFather ](https://web.telegram.org/#/im?p=@BotFather)
 2. Vraag een nieuwe bot aan:
@@ -31,7 +31,8 @@ We maken nu de chatbot. Log in op PC op telegram via [web.telegram.org](https://
 	TEST_FK_bot
 ```
 
-4. Je krijgt, als naam goedgekeurd wordt, als antwoord een __TOKEN__, welke je moet kopieren/opschrijven. Dit __TOKEN__ zul je moeten ingeven op de Raspberry Pi
+4. Je krijgt, als naam goedgekeurd wordt, als antwoord een __TOKEN__, welke je moet kopieren/opschrijven. Dit __TOKEN__ zul je moeten ingeven in een configuratiebestand op de Raspberry Pi.
+
 5. Je moet nu nog toelaten dat je bot alle berichten kan zien in een groep waar het deel van is. Volgende commandoreeks tik je daarvoor in, waarbij je opnieuw JOUW chatbot naam gebruikt ipv TEST_FK_bot:
 ```
     /setprivacy

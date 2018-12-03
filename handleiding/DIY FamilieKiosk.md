@@ -9,13 +9,19 @@ Zo'n pakket komt met een lege microSD kaart, welke we moeten voorbereiden. We in
 
 * 2018-04-18-raspbian-stretch.zip
 * 2018-10-09-raspbian-stretch.zip
+* 2018-11-13-raspbian-stretch-full.zip
 
 Download nu `Etcher` voor jouw PC van [etcher.io/](https://etcher.io/). Als gedownload, installeer het, en start Etcher. Selecteer de Raspbian .iso die je gedownload hebt in Etcher, selecteer de microSD kaart als drager, en druk op `Flash`. Wacht tot het gedaan is, en je hebt nu je harde schijf voor je Raspberry Pi klaar.
 
 Start de Rasp Pi met de [hardware guide](https://www.raspberrypi.org/learning/hardware-guide/). De Rasp zou moeten werken en je een linux desktop tonen. 
 
 ## Installeer nodige software op Raspberry Pi
-De familiekiosk heeft volgende vereisten. Open een terminal, en druk de commando's gegeven als `commando` om de nodige software te installeren:
+
+Vooraleer je de familiekiosk zelf kan installeren moet je een aantal ondersteunende programmas installeren. Hiervoor moet je de Raspbian Terminal gebruiken. Je kan de terminal opstarten met het zwarte icoon, in de menubalk links bovenaan.
+
+![Raspbian Terminal Icoon](img/Raspbian-terminal-icoon.png)
+
+Druk de commando's gegeven als `commando` om de nodige software te installeren:
 
 1. Beeldverwerking: `sudo apt-get install python-imaging-tk`
 2. Button en buzzer support: `sudo apt-get install python-rpi.gpio python3-rpi.gpio`
@@ -50,6 +56,8 @@ Test de playback met volgende commando's in een terminal:
     omxplayer /home/pi/familiekiosk/src/video/dummy/testvideo.mp4
     gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/video/dummy/testvideo.mp4
     gst-launch-1.0 playbin uri=file:///home/pi/familiekiosk/src/voice/dummy/testvoice.ogg
+
+Wanneer je foutmeldingen krijgt zoals "Pipeline doesn't want to pause." of "Pipeline wil niet pauseren" bij het uitvoeren van de laatste twee commando's, kijk dan zeker na of je het commando wel juist hebt ingevoerd. Let vooral op uri in plaats van url, het : symbool na file en de daarop volgende drie / symbolen.
 
 ## Autostart van de FamilieKiosk
 
