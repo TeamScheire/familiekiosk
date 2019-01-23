@@ -9,37 +9,56 @@ Je hebt een familiekiosk ontvangen. Dit omvat een doos met knoppen en een Raspbe
 
 De Raspberry Pi start op, en toont onmiddelijk de Kiosk met de standaard foto. Om de Kiosk af te sluiten klik je op de __Linkermuis__ knop. Je bekomt dan de desktop: 
 
-![Raspian](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/raspbian.png)
+![Raspian](img/raspbian.png)
 
 ## Wifi Netwerk instellen
 
 De Raspberry Pi beschikt over WiFi welke we gebruiken om met het internet te connecteren en nieuwe multimedia te bekomen voor de Kiosk. Je dient dus het netwerk in te stellen voor de locatie waar de familiekiosk opgezet wordt. Klik hiervoor in de rechterbovenhoek op het icoon van het netwerk, selecteer de SSID van je wifi netwerk, en geef je paswoord op. 
 
-## Telegram bot maken
+## Installeer Telegram, aamaken bot en configureren van de bot
 
-De Kiosk werkt via een chatbot op Telegram. Elke Kiosk moet zijn eigen _geheime_ chatbot hebben. Je dient dus een chatbot aan te maken, en te configureren op je FamilieKiosk. Installeer `Telegram` op je GSM. Maak ook een login op [telegram.org](https://telegram.org/). 
+De Kiosk werkt via een chatbot op [Telegram](https://telegram.org/) een chatapp met dezelfde functies als WhatsApp, maar met de mogelijkheid om er extra code voor te schrijven via bots. 
 
-We maken nu de chatbot. Je kan hiervoor gelijk welke browser gebruiken, maar het is handig als je dit meteen op de Raspberri Pi zelf doet. Je kan de browser starten met het wereldbol symbool in het menu linksboven. Log in op telegram via [web.telegram.org](https://web.telegram.org). We praten met de chatbot __botfather__ om een eigen nieuwe chatbot te maken. Kies een goede naam hiervoor, in deze handleiding gebruiken we __TEST_FK_bot__. Wijzig dit door je eigen naam!
+Net zoals bij Whatsapp, kan je via telegram groepsgesprekken hebben. De bot die je gaat maken, zal ook deel uitmaken van deze groep en de gedeelde foto's, video's en audioboodschappen automatisch kopiëren naar de familiekiosk.
 
-1. Praat met botfather door te klikken op volgende link: [web.telegram.org/#/im?p=@BotFather ](https://web.telegram.org/#/im?p=@BotFather)
-2. Vraag een nieuwe bot aan:
+1. Installeer [Telegram](https://telegram.org/) op je smartphone. 
+
+Elke Familiekiosk moet zijn eigen _geheime_ chatbot hebben. Je gaat dus voor je eigen kiosk een chatbot aanmaken, deze configureren en toevoegen aan het groepsgesprek waar de rest van je familie in zit.
+
+Bedenk een goede naam voor je bot, in deze handleiding gebruiken we ```MemePepeBot```. Wijzig deze door je eigen naam!
+
+Het aanmaken en configureren van een bot gebeurt ook via Telegram door te praten met de chatbot ```@BotFather```.
+
+Je kan dit doen via de telegram app op je smartphone, maar je kan ook via via [web.telegram.org](https://web.telegram.org) telegram openen. Voor de rest van deze handleiding gaan we er van uit dat je via de web-interface werkt.
+
+2. Log in op [web.telegram.org](https://web.telegram.org)
+3. Praat met ```@BotFather``` door te klikken op volgende link: [web.telegram.org/#/im?p=@BotFather ](https://web.telegram.org/#/im?p=@BotFather)
+4. In het gesprek met ```@BotFather``` vraag je een nieuwe bot aan met volgend commando: ```/newbot``` De volledige conversatie ziet er ongeveer zo uit. Kies uiteraard een andere naam ;)
+
+![newbot](img/botfather01.png)
+
+Je hebt nu een bot gemaakt!
+
+De token (het wachtwoord bestaande uit de rode letters en cijfers) kopiëer je en hou je even bij. Je hebt dit straks nodig in het configuratiebestand van de familiekiosk applicatie. Hou het voor de rest zeker geheim en geef het aan niemand anders door.
+
+Een volgendestap is nodig om je bot de mogelijkheid te geven om te luisteren naar alles wat er gezegd wordt in een chatgroep en niet alleen de commando's (die beginnen met een /).
+
+5. Geef volgende commandoreeks één voor één in (of je kiest een antwoord na het eerste commando via de keuzeknoppen die @BotFather aanbiedt)
+
 ```
-	/newbot
-```
-3. Je krijgt antwoord met de vraag eerst naam te geven, bv _Test Bot_ en dan een __username__ welke moet eindigen met _bot. Geef nu de username die je gekozen hebt:
-```
-	TEST_FK_bot
+/setprivacy
+@MemePepeBot
+disable
 ```
 
-4. Je krijgt, als naam goedgekeurd wordt, als antwoord een __TOKEN__, welke je moet kopieren/opschrijven. Dit __TOKEN__ zul je moeten ingeven in een configuratiebestand op de Raspberry Pi.
+De conversatie ziet er dan ongeveer als volgt uit:
 
-5. Je moet nu nog toelaten dat je bot alle berichten kan zien in een groep waar het deel van is. Volgende commandoreeks tik je daarvoor in, waarbij je opnieuw JOUW chatbot naam gebruikt ipv TEST_FK_bot:
-```
-    /setprivacy
-	@TEST_FK_bot
-	Disable
-```
-Dat is het, je hebt nu een eigen chatbot aangemaakt! 
+![newbot](img/botfather02.png)
+
+Als laatste stap moet je de bot toevoegen aan de chatgroep waar de rest van de familie ook in kan komen (of al in zit).
+
+6. Voeg deze bot toe aan de chatgroep, net zoals je elke andere gebruiker van Telegram zou toevoegen.
+
 
 ## Familie Kiosk instellen
 
@@ -55,26 +74,26 @@ Bovenaan dit bestand moet je het __TOKEN__ van je chatbot geven, en een paswoord
 	# the password required to listen to the chatgroup
 	PASSWORD = "FK_TEST"
 
-Wijzig __FK_TEST__ in een _goed_ paswoord!! Dit is je beveiliging dat niemand anders ongepaste foto's naar je kiosk kan sturen gezien iedereen met je chatbot kan praten!
+Wijzig ```FK_TEST``` in een _goed_ paswoord! Iedereen die dirt wachtwoord kent, zal foto's kunnen sturen naar je kiosk kan sturen. Omdat in principe iedereen over heel de wereld met de bot zou kunnen praten, is deze extra beveiliging ingebouwd.
 
 De andere opties die je mogelijks wil wijzigen zijn:
 
-1. Als geen knoppen, wijzig dan de knop van __True__ in __False__ 
-2. Als geen buzzer, wijzig dan __BUZZER_PRESENT__ in __False__
+1. Als geen knoppen, wijzig dan de knop van ```True``` naar ```False``` 
+2. Als geen buzzer, wijzig dan ```BUZZER_PRESENT``` in ```False```
 3. De tijd van het alarm staat op 18u. Dan zal voor 30 min de meest recente foto's, audio en video getoond worden. Om ander uur te kiezen, wijzig dit:
 ```
 	ALARM_HOUR = 18
 	ALARM_MIN = 0
 ```
-	
+
 Je kan nu de Raspberry Pi herstarten om de kiosk op te starten met de chatbot. 
 
 ## Berichten sturen naar de Kiosk
-Om berichten te sturen, voeg je jouw gemaakte chatbot, hier __TEST_FK_BOT__ genoemd, toe aan een groep, of doe je er een rechtstreeks gesprek mee. Voor deze je berichten zal doorsturen naar de kiosk, moet je wel een keer het paswoord doorgeven. Doe dit als volgt:
+Om berichten te sturen, voeg je jouw gemaakte chatbot, hier ```MemePepeBot``` genoemd, toe aan een groep, of doe je er een rechtstreeks gesprek mee. Voordat de bot je berichten zal doorsturen naar de kiosk, moet je wel een keer het wachtwoord doorgeven. Doe dit als volgt:
 
 1. zoek op je chatbot en voeg hem toe
 
-![Chatbot zoeken](https://github.com/TeamScheire/familiekiosk/blob/master/handleiding/img/Telegram.png)
+![Chatbot zoeken](img/Telegram.png)
 
 2. test of de chatbox aan staat. Dit is het geval als de Raspberry Pi opgestart is. Indien niet, laat weten aan de eigenaar hem opnieuw in het stopcontact te steken! Je kan dit testen via het start commando in de chat waarop de chatbox met _Hi_ zal antwoorden:
 ```
