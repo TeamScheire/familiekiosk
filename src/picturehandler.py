@@ -130,7 +130,8 @@ class PictureExtended(Picture):
     def send(self):
         with open(self.compressed_file_path, 'rb') as file:
             #we reply in telegram with the photo as feedback
-            self.message.reply_photo(file, reply_to_message_id=self.reply_to_message_id)
+            #self.message.reply_photo(file, reply_to_message_id=self.reply_to_message_id)
+            self.message.reply_text('dankjewel voor de foto!')
         if free_Mb() < 80:
             self.message.reply_text("Opgelet, slechts {}Mb vrije ruimte!".format(free_Mb()),
                                 reply_to_message_id=self.reply_to_message_id)
@@ -165,7 +166,7 @@ def get_quality_level(args):
 def on_photo_received(bot, update):
     logger.info("photo received")
 
-    quality_level = 50 # 100 is full best quality, 1 is worst
+    quality_level = 80 # 100 is full best quality, 1 is worst
     
     if update and update.message:
         PictureExtended(update.message, quality=quality_level).download_send2frame()

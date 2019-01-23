@@ -98,7 +98,8 @@ class TVbox():
         #set no border
         self.root.config(highlightthickness=0, cursor='none')
         self.label = tkinter.Label(text="Foto van ...", font=("Courier", 44))
-        self.label.pack(fill=tkinter.X)
+        if DISPLAY_BANNER:
+            self.label.pack(fill=tkinter.X)
         
         self.w, self.h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
         self.root.bind('<Escape>', self.closefullscreen)
@@ -224,7 +225,8 @@ class TVbox():
         30 min after alarm time: only the recent images
         otherwise all images
         """
-        list_of_files = sorted( glob.iglob(IMAGES), key=os.path.getmtime, reverse=True)
+        list_of_files = sorted(glob.iglob(IMAGES), key=os.path.getmtime, reverse=True)
+
     
         list_of_files = [x for x in list_of_files if x[-9:] != "_comp.jpg"]
         if self.len_img_list != len(list_of_files):
@@ -673,13 +675,14 @@ class TVbox():
                     self.change_state = True
                     self.state = STATE_PIC
                 self.show()
-                
-        txt = "{} - {} ({})".format(now, self.img_user, self.img_day)
+
         if self.state == STATE_VID and USE_EXTERNAL_VIDEO_PLAYER:
             #label will be under the video most of the time, so show nothing!
             self.label.configure(text="")
         else:
-            self.label.configure(text=txt)
+            if DISPLAY_BANNER:
+                txt = "{} - {} ({})".format(now, self.img_user, self.img_day)    
+                self.label.configure(text=txt)
         
         # check time to see if we need to do alarm
         if BUZZER_PRESENT and ALARM_SET:

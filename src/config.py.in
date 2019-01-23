@@ -37,6 +37,9 @@ NEXT_PIN = 17
 PREV_BUTTON = True
 PREV_PIN = 23
 
+# display a banner on top of the screen
+DISPLAY_BANNER = False
+
 # is a button for an alarm connected? 
 BUZZER_PRESENT = True
 BUZZER_PIN = 24

@@ -27,8 +27,7 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
 else:
     import configparser
     
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
-                          Job, BaseFilter)
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Job, BaseFilter)
 import logging
 
 from config import *
@@ -46,16 +45,14 @@ import voicehandler
 import videohandler
 
 
-ACCEPTED_CHATS = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])),
-                              'chatlist.ini')
-APPROVED_CHATS= []
+ACCEPTED_CHATS = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'chatlist.ini')
+APPROVED_CHATS = []
 
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
 def start(bot, update):
     """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi! Give command \n/secret XXXXX\n with XXXX '
-                                'the secret password')
+    update.message.reply_text('Hallo, geef het wachtwoord in met commando \n/secret XXXXX\n (XXXX vervang je door het wachtwoord)')
 
 
 def help(bot, update):
@@ -65,18 +62,19 @@ def help(bot, update):
 
 def echo(bot, update):
     """Echo the user message."""
+    print ('tekst')
     update.message.reply_text(update.message.text)
 
 def secret(bot, update, args):
-    """Give the secret to accept messages to this bot
-    """
+    """Give the secret to accept messages to this bot """
     global APPROVED_CHATS
     password = "".join(args)
     print ('Received pass', password)
     if password == PASSWORD:
-        update.message.reply_text("Correct! Ik volg deze chatgroep op!")
+        update.message.reply_text("Correct! Vanaf nu kan je foto's en video's sturen naar deze groep")
         #we voegen toe aan lijst van correcte chat
         chatid = update.message.chat.id
+        print (chatid)
         
         if os.path.isfile(ACCEPTED_CHATS):
             config = ConfigParser.RawConfigParser()
@@ -97,8 +95,11 @@ def secret(bot, update, args):
                 with open(ACCEPTED_CHATS, 'wb') as metafile:
                     config.write(metafile)
     else:
-        update.message.reply_text("Fout!")
+        update.message.reply_text("Fout wachtwoord!")
         
+def not_authorized(bot, update):
+    update.message.reply_text('Je bent nog niet gekend, geef eerst het wachtwoord in met commando \n/secret XXXXX\n (XXXX vervang je door het wachtwoord)')
+
 def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
@@ -137,7 +138,7 @@ def main():
     dp.add_handler(CommandHandler("secret", secret, pass_args=True))
     
     # For testing: on noncommand i.e message - echo the message on Telegram
-#    dp.add_handler(MessageHandler(Filters.text, echo))
+    # dp.add_handler(MessageHandler(Filters.all, echo))
 
     # we react on receiving a picture
     dp.add_handler(MessageHandler(Filters.photo & filter_approved_chats, picturehandler.on_photo_received))
@@ -146,6 +147,9 @@ def main():
     dp.add_handler(MessageHandler(Filters.video_note & filter_approved_chats, videohandler.on_video_note_received))
     dp.add_handler(MessageHandler(Filters.video & filter_approved_chats, videohandler.on_video_received))
 
+    # catchall if not approved user
+    dp.add_handler(MessageHandler(Filters.photo | Filters.voice | Filters.video_note | Filters.video, not_authorized))
+    
     # Get the job queue to shedule jobs, see doc at
     # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-JobQueue
     jq = updater.job_queue
@@ -159,10 +163,13 @@ def main():
     # Start the Bot
     updater.start_polling(poll_interval=5, timeout=10)
 
+    print ('fk_chatbot started')
+    
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
+
 
 if __name__ == '__main__':
     #some blabla to update chmod
