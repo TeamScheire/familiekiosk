@@ -235,7 +235,14 @@ class TVbox():
         self.len_img_list = len(list_of_files)
         
         if self.most_recent_mode():
+            #print (self.most_recent_mode)
             self.list_of_img = list_of_files[:MAX_JPG]
+        elif (RANDOMIZE_PHOTOS == True):
+            #print (RANDOMIZE_PHOTOS)
+            import random
+            from random import shuffle
+            self.list_of_img = list_of_files
+            shuffle(self.list_of_img)
         else:
             self.list_of_img = list_of_files
         #print (self.list_of_img)

@@ -16,6 +16,10 @@ ALARM_MIN = 0
 # do a one minute sound alarm? 
 ALARM_SET = True
 
+# If not showing only the most recent messages, do you want to show
+# the photos in a random order?
+RANDOMIZE_PHOTOS = False
+
 #send email of pictures you receive?
 SEND_EMAIL_OF_PICS = False
 
