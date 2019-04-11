@@ -63,6 +63,7 @@ def help(bot, update):
 def echo(bot, update):
     """Echo the user message."""
     print ('tekst')
+    sys.stdout.flush()
     update.message.reply_text(update.message.text)
 
 def secret(bot, update, args):
@@ -70,11 +71,13 @@ def secret(bot, update, args):
     global APPROVED_CHATS
     password = "".join(args)
     print ('Received pass', password)
+    sys.stdout.flush()
     if password == PASSWORD:
         update.message.reply_text("Correct! Vanaf nu kan je foto's en video's sturen naar deze groep")
         #we voegen toe aan lijst van correcte chat
         chatid = update.message.chat.id
         print (chatid)
+        sys.stdout.flush()
         
         if os.path.isfile(ACCEPTED_CHATS):
             config = ConfigParser.RawConfigParser()
@@ -164,6 +167,7 @@ def main():
     updater.start_polling(poll_interval=5, timeout=10)
 
     print ('fk_chatbot started')
+    sys.stdout.flush()
     
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

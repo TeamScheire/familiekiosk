@@ -237,6 +237,7 @@ class TVbox():
         if self.len_img_list != len(list_of_files) and self.new_images != -2 :
             #New images have arived, show the first ones as determined in the config
             print("Showing the newly-arrived images")
+            sys.stdout.flush()
             self.new_images =  len(list_of_files) - self.len_img_list
             self.list_of_img = list_of_files
             if self.first_photo_already_shown == 0 :
@@ -247,6 +248,7 @@ class TVbox():
                 #When all new images have been shown or if we're at the maximum, 
                 #get out of this condition and prepair to detect for a new load
                 print("all new images have been shown")
+                sys.stdout.flush()
                 self.len_img_list = len(list_of_files)
                 self.new_images = -1 
                 self.first_photo_already_shown = 0
@@ -308,6 +310,7 @@ class TVbox():
             #stop gstreamer
             if hasattr(self, 'player'):
                 print ('STOPPING the current playing track on gstreamer')
+                sys.stdout.flush()
                 self.player.set_state(Gst.State.READY)
                 self.player.set_state(Gst.State.NULL)
                 del self.bus
@@ -348,6 +351,7 @@ class TVbox():
                  self.new_images = 0
                  self.showimagenr = 0
                  print ("Shuffled the list, new_images is now ", self.new_images)
+                 sys.stdout.flush()
             # now show the next image
             if len(self.list_of_img) == 0 :
                 #no images yet, show dummy
@@ -374,6 +378,7 @@ class TVbox():
         pilImage = Image.open(image_file)
         imgWidth, imgHeight = pilImage.size
         print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
+        sys.stdout.flush()
         # too large or too small, scale to fit the frame
         ratio = min(self.w/imgWidth, (self.h-self.h_label)/imgHeight)
         imgWidth = int(imgWidth*ratio)
@@ -437,6 +442,7 @@ class TVbox():
 
             self.showaudionr = self.showaudionr % len(self.list_of_aud)
             print('playing', self.showaudionr, self.list_of_aud[self.showaudionr])
+            sys.stdout.flush()
 
             if True:
                 #play audio
@@ -554,6 +560,7 @@ class TVbox():
         We send via telegram a chat that we like this image
         """
         print ("Replying to the shown image or video")
+        sys.stdout.flush()
         if ((self.state == STATE_PIC and len(self.list_of_img) == 0) or
            (self.state == STATE_VID and len(self.list_of_vid) == 0) or
            (self.state == STATE_AUD and len(self.list_of_aud) == 0)) :
@@ -582,13 +589,16 @@ class TVbox():
                 #indicate to the chat bot to send a reply to this picture
                 dirn, basen = os.path.split(meta_filename)
                 print ("Chat present, preparing reply on", basen)
+                sys.stdout.flush()
                 reply_filename = os.path.join(dirn, 'reply', basen)
                 with open(reply_filename, 'wb') as replyfile:
                     replyfile.write("reply")
             else:
                 print ("No chat id, no reply.", meta_filename)
+                sys.stdout.flush()
         else:
             print ("No meta file, no reply.", meta_filename)
+            sys.stdout.flush()
 
     def do_alarm(self):
         alarm_on = False
@@ -724,6 +734,7 @@ class TVbox():
     def closefullscreen(self, event):
         #master.withdraw() # if you want to bring it back
         print ("In close fullscreen")
+        sys.stdout.flush()
         if BUZZER_PRESENT:
             #switch off
             GPIO.output(BUZZER_PIN, GPIO.HIGH)
