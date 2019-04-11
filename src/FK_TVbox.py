@@ -50,6 +50,9 @@ gi.require_version('GstVideo', '1.0')
 gi.require_version('GdkX11', '3.0')
 from gi.repository import Gst, GObject, GdkX11, GstVideo
 
+import random
+from random import shuffle
+
 
 BASE_PIC_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
 IMAGES = os.path.join(BASE_PIC_PATH, '*.jpg')
@@ -79,6 +82,8 @@ class TVbox():
         self.showvideonr = 0
         self.showaudionr = 0
         self.len_img_list = 0
+        self.new_images = -2
+        self.first_photo_already_shown = 0
         self.len_vid_list = 0
         self.len_aud_list = 0
         self.list_of_img = []
@@ -229,18 +234,33 @@ class TVbox():
 
     
         list_of_files = [x for x in list_of_files if x[-9:] != "_comp.jpg"]
-        if self.len_img_list != len(list_of_files):
-            #new image arrived, show it
-            self.showimagenr = 0
-        self.len_img_list = len(list_of_files)
-        
-        if self.most_recent_mode():
-            self.list_of_img = list_of_files[:MAX_JPG]
-        elif (RANDOMIZE_PHOTOS == True):
-            import random
-            from random import shuffle
+        if self.len_img_list != len(list_of_files) and self.new_images != -2 :
+            #New images have arived, show the first ones as determined in the config
+            print("Showing the newly-arrived images")
+            self.new_images =  len(list_of_files) - self.len_img_list
             self.list_of_img = list_of_files
-            shuffle(self.list_of_img)
+            if self.first_photo_already_shown == 0 :
+                #Reset showimagenr only the first time we're in this loop of new photo's
+                self.showimagenr = 0
+                self.first_photo_already_shown = 1
+            if self.new_images == self.showimagenr or self.showimagenr == MAX_JPG :
+                #When all new images have been shown or if we're at the maximum, 
+                #get out of this condition and prepair to detect for a new load
+                print("all new images have been shown")
+                self.len_img_list = len(list_of_files)
+                self.new_images = -1 
+                self.first_photo_already_shown = 0
+        else:
+            #if here, it's because the pi was booted for the first time
+            self.list_of_img = list_of_files
+            self.len_img_list = len(list_of_files)
+
+        if self.most_recent_mode():
+            #print (self.most_recent_mode)
+            self.list_of_img = list_of_files[:MAX_JPG]
+        elif (RANDOMIZE_PHOTOS == True) :
+            #do not rebuild the list of images while in random mode
+            self.list_of_img =  self.list_of_img
         else:
             self.list_of_img = list_of_files
         #print (self.list_of_img)
@@ -322,6 +342,12 @@ class TVbox():
         if self.currentimage != self.showimagenr:
             # we regenerate list of images to have latest present
             self.listimages()
+            # Only consider shuffling if there are no new images to be shown
+            if self.showimagenr  > self.new_images and self.new_images < 0 and RANDOMIZE_PHOTOS == True : 
+                 shuffle(self.list_of_img)
+                 self.new_images = 0
+                 self.showimagenr = 0
+                 print ("Shuffled the list, new_images is now ", self.new_images)
             # now show the next image
             if len(self.list_of_img) == 0 :
                 #no images yet, show dummy
@@ -348,6 +374,7 @@ class TVbox():
         pilImage = Image.open(image_file)
         imgWidth, imgHeight = pilImage.size
         print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
+        print ('meta_filename')
         # too large or too small, scale to fit the frame
         ratio = min(self.w/imgWidth, (self.h-self.h_label)/imgHeight)
         imgWidth = int(imgWidth*ratio)
