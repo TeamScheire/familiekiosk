@@ -34,6 +34,7 @@ else:
     import configparser
 
 from PIL import Image, ImageTk
+import functools
 import time
 from datetime import datetime
 
@@ -53,6 +54,8 @@ from gi.repository import Gst, GObject, GdkX11, GstVideo
 import random
 from random import shuffle
 
+#BASE_PATH_LOG =  os.path.abspath(os.path.dirname(sys.argv[0])) + '/../tv_box.log'
+#sys.stdout = open("tv_box.log", "w+")
 
 BASE_PIC_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
 IMAGES = os.path.join(BASE_PIC_PATH, '*.jpg')
@@ -241,7 +244,8 @@ class TVbox():
             self.new_images =  len(list_of_files) - self.len_img_list
             self.list_of_img = list_of_files
             if self.first_photo_already_shown == 0 :
-                #Reset showimagenr only the first time we're in this loop of new photo's
+                print("Reset showimagenr only the first time we're in this loop of new photo's")
+                sys.stdout.flush()
                 self.showimagenr = 0
                 self.first_photo_already_shown = 1
             if self.new_images == self.showimagenr or self.showimagenr == MAX_JPG :
@@ -252,20 +256,28 @@ class TVbox():
                 self.len_img_list = len(list_of_files)
                 self.new_images = -1 
                 self.first_photo_already_shown = 0
-        else:
+        elif self.new_images == -2 :
             #if here, it's because the pi was booted for the first time
+            print ("Detected the first boot")
+            sys.stdout.flush()
             self.list_of_img = list_of_files
             self.len_img_list = len(list_of_files)
 
         if self.most_recent_mode():
             #print (self.most_recent_mode)
+            print ("we're in recent mode")
+            sys.stdout.flush()
             self.list_of_img = list_of_files[:MAX_JPG]
         elif (RANDOMIZE_PHOTOS == True) :
             #do not rebuild the list of images while in random mode
+            print ("not rebuilding the list while in random mode to prevent re-randomization")
+            sys.stdout.flush()
             self.list_of_img =  self.list_of_img
         else:
             self.list_of_img = list_of_files
+            print ("not in recent mode and not in random mode - use the  sorted list")
         #print (self.list_of_img)
+        #sys.stdout.flush()
 
     def listvideos(self):
         """
@@ -310,7 +322,6 @@ class TVbox():
             #stop gstreamer
             if hasattr(self, 'player'):
                 print ('STOPPING the current playing track on gstreamer')
-                sys.stdout.flush()
                 self.player.set_state(Gst.State.READY)
                 self.player.set_state(Gst.State.NULL)
                 del self.bus
@@ -375,7 +386,9 @@ class TVbox():
                 self.img_day = ''
 
     def showPIL(self, image_file):
-        pilImage = Image.open(image_file)
+        Pic = Image.open(image_file)
+        pilImage = self.image_transpose_exif(Pic)
+        #pilImage.save(os.path.join(BASE_PIC_PATH,"transformed.jpg"))
         imgWidth, imgHeight = pilImage.size
         print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
         sys.stdout.flush()
@@ -388,6 +401,39 @@ class TVbox():
         imagesprite = self.canvas.create_image(self.w/2, 
                                                (self.h-self.h_label)/2, 
                                                image=self.image)
+
+    def image_transpose_exif(self, im):
+        """
+            Apply Image.transpose to ensure 0th row of pixels is at the visual
+            top of the image, and 0th column is the visual left-hand side.
+            Return the original image if unable to determine the orientation.
+            As per CIPA DC-008-2012, the orientation field contains an integer,
+            1 through 8. Other values are reserved.
+            Thanks to Roman Odaisky and others:
+            https://stackoverflow.com/questions/4228530/pil-thumbnail-is-rotating-my-image/
+        """
+        exif_orientation_tag = 0x0112
+        exif_transpose_sequences = [                   # Val  0th row  0th col
+            [],                                        #  0    (reserved)
+            [],                                        #  1   top      left
+            [Image.FLIP_LEFT_RIGHT],                   #  2   top      right
+            [Image.ROTATE_180],                        #  3   bottom   right
+            [Image.FLIP_TOP_BOTTOM],                   #  4   bottom   left
+            [Image.FLIP_LEFT_RIGHT, Image.ROTATE_90],  #  5   left     top
+            [Image.ROTATE_270],                        #  6   right    top
+            [Image.FLIP_TOP_BOTTOM, Image.ROTATE_90],  #  7   right    bottom
+            [Image.ROTATE_90],                         #  8   left     bottom
+        ]
+
+        try:
+            seq = exif_transpose_sequences[im._getexif()[exif_orientation_tag]]
+        except Exception:
+            return im
+        else:
+            print("Succesfully read exif data")
+            sys.stdout.flush()
+            return functools.reduce(type(im).transpose, seq, im)
+
 
     def showvideo(self):
         if self.currentvideo != self.showvideonr:
@@ -442,7 +488,6 @@ class TVbox():
 
             self.showaudionr = self.showaudionr % len(self.list_of_aud)
             print('playing', self.showaudionr, self.list_of_aud[self.showaudionr])
-            sys.stdout.flush()
 
             if True:
                 #play audio
@@ -560,7 +605,6 @@ class TVbox():
         We send via telegram a chat that we like this image
         """
         print ("Replying to the shown image or video")
-        sys.stdout.flush()
         if ((self.state == STATE_PIC and len(self.list_of_img) == 0) or
            (self.state == STATE_VID and len(self.list_of_vid) == 0) or
            (self.state == STATE_AUD and len(self.list_of_aud) == 0)) :
@@ -589,16 +633,13 @@ class TVbox():
                 #indicate to the chat bot to send a reply to this picture
                 dirn, basen = os.path.split(meta_filename)
                 print ("Chat present, preparing reply on", basen)
-                sys.stdout.flush()
                 reply_filename = os.path.join(dirn, 'reply', basen)
                 with open(reply_filename, 'wb') as replyfile:
                     replyfile.write("reply")
             else:
                 print ("No chat id, no reply.", meta_filename)
-                sys.stdout.flush()
         else:
             print ("No meta file, no reply.", meta_filename)
-            sys.stdout.flush()
 
     def do_alarm(self):
         alarm_on = False
@@ -734,7 +775,6 @@ class TVbox():
     def closefullscreen(self, event):
         #master.withdraw() # if you want to bring it back
         print ("In close fullscreen")
-        sys.stdout.flush()
         if BUZZER_PRESENT:
             #switch off
             GPIO.output(BUZZER_PIN, GPIO.HIGH)
