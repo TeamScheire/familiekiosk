@@ -374,7 +374,6 @@ class TVbox():
         pilImage = Image.open(image_file)
         imgWidth, imgHeight = pilImage.size
         print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
-        print ('meta_filename')
         # too large or too small, scale to fit the frame
         ratio = min(self.w/imgWidth, (self.h-self.h_label)/imgHeight)
         imgWidth = int(imgWidth*ratio)
