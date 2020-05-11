@@ -26,6 +26,7 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
     configparser = ConfigParser
 else:
     import configparser
+    ConfigParser = configparser
     
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Job, BaseFilter)
 import logging
