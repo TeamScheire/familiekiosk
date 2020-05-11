@@ -13,6 +13,7 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
     configparser = ConfigParser
 else:
     import configparser
+    ConfigParser = configparser
     
 from telegram.ext import MessageHandler
 from telegram.ext import CommandHandler
@@ -124,7 +125,7 @@ class PictureExtended(Picture):
             meta.set('message', 'chat_title', '')
         
         # Writing our configuration file
-        with open(meta_info_filename, 'wb') as metafile:
+        with open(meta_info_filename, 'w') as metafile:
             meta.write(metafile)
 
     def send(self):
@@ -163,7 +164,7 @@ def get_quality_level(args):
     return quality_level
 
 @run_async
-def on_photo_received(bot, update):
+def on_photo_received(update, args):
     logger.info("photo received")
 
     quality_level = 80 # 100 is full best quality, 1 is worst

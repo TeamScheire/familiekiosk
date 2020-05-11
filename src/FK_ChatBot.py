@@ -51,26 +51,27 @@ APPROVED_CHATS = []
 
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
-def start(bot, update):
+def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hallo, geef het wachtwoord in met commando \n/secret XXXXX\n (XXXX vervang je door het wachtwoord)')
 
 
-def help(bot, update):
+def help(update, context):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
 
-def echo(bot, update):
+def echo(update, context):
     """Echo the user message."""
     print ('tekst')
     sys.stdout.flush()
     update.message.reply_text(update.message.text)
 
-def secret(bot, update, args):
+def secret(update, context):
     """Give the secret to accept messages to this bot """
     global APPROVED_CHATS
-    password = "".join(args)
+    print("\nARGUMENTS: {}".format(context.args))
+    password = "".join(context.args)
     print ('Received pass', password)
     sys.stdout.flush()
     if password == PASSWORD:
@@ -96,17 +97,17 @@ def secret(bot, update, args):
                     config.add_section("Approved")
                 config.set("Approved", "chatids",
                            ','.join([str(x) for x in APPROVED_CHATS]))
-                with open(ACCEPTED_CHATS, 'wb') as metafile:
+                with open(ACCEPTED_CHATS, 'w') as metafile:
                     config.write(metafile)
     else:
         update.message.reply_text("Fout wachtwoord!")
         
-def not_authorized(bot, update):
+def not_authorized(update, context):
     update.message.reply_text('Je bent nog niet gekend, geef eerst het wachtwoord in met commando \n/secret XXXXX\n (XXXX vervang je door het wachtwoord)')
 
-def error(bot, update, error):
+def error(bot, update):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, error)
+    logger.warning('Update "%s" caused error "%s"', update, update.error)
 
 
 class FilterApprovedChat(BaseFilter):
@@ -131,7 +132,7 @@ def main():
         APPROVED_CHATS = [int(x) for x in chat_ids if x]
             
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(TOKEN)
+    updater = Updater(TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

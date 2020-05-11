@@ -24,6 +24,7 @@ if sys.version_info[0] == 2:  # the tkinter library changed it's name from Pytho
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
 else:
     import tkinter
+    Tkinter = tkinter
 
 import threading
 
@@ -32,6 +33,7 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
     configparser = ConfigParser
 else:
     import configparser
+    ConfigParser = configparser
 
 from PIL import Image, ImageTk
 import functools
