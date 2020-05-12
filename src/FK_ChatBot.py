@@ -70,7 +70,6 @@ def echo(update, context):
 def secret(update, context):
     """Give the secret to accept messages to this bot """
     global APPROVED_CHATS
-    print("\nARGUMENTS: {}".format(context.args))
     password = "".join(context.args)
     print ('Received pass', password)
     sys.stdout.flush()
