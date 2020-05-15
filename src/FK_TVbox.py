@@ -3,7 +3,13 @@
 
 from __future__ import division, print_function
 
-from config import *
+if os.path.isfile("config.py"):
+    from config import *
+else:
+    print("No valid config file found - did you rename config.py.in to config.py?")
+    sys.stdout.flush()
+    print("Exiting...")
+    sys.exit()
 
 HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
 HAS_GPIO = HAS_BUTTON or BUZZER_PRESENT

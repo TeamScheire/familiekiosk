@@ -31,7 +31,14 @@ else:
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Job, BaseFilter)
 import logging
 
-from config import *
+if os.path.isfile("config.py"):
+    from config import *
+else:
+    print("No valid config file found - did you rename config.py.in to config.py?")
+    sys.stdout.flush()
+    print("Exiting...")
+    sys.exit()
+
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
