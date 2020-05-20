@@ -3,7 +3,13 @@
 
 from __future__ import division, print_function
 
-from config import *
+if os.path.isfile("config.py"):
+    from config import *
+else:
+    print("No valid config file found - did you rename config.py.in to config.py?")
+    sys.stdout.flush()
+    print("Exiting...")
+    sys.exit()
 
 HAS_BUTTON = REPLY_BUTTON or NEXT_BUTTON or PREV_BUTTON
 HAS_GPIO = HAS_BUTTON or BUZZER_PRESENT
@@ -24,6 +30,7 @@ if sys.version_info[0] == 2:  # the tkinter library changed it's name from Pytho
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
 else:
     import tkinter
+    Tkinter = tkinter
 
 import threading
 
@@ -32,8 +39,10 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
     configparser = ConfigParser
 else:
     import configparser
+    ConfigParser = configparser
 
 from PIL import Image, ImageTk
+import functools
 import time
 from datetime import datetime
 
@@ -50,6 +59,11 @@ gi.require_version('GstVideo', '1.0')
 gi.require_version('GdkX11', '3.0')
 from gi.repository import Gst, GObject, GdkX11, GstVideo
 
+import random
+from random import shuffle
+
+#BASE_PATH_LOG =  os.path.abspath(os.path.dirname(sys.argv[0])) + '/../tv_box.log'
+#sys.stdout = open("tv_box.log", "w+")
 
 BASE_PIC_PATH = os.path.abspath(os.path.dirname(sys.argv[0])) + '/pics/'
 IMAGES = os.path.join(BASE_PIC_PATH, '*.jpg')
@@ -79,6 +93,8 @@ class TVbox():
         self.showvideonr = 0
         self.showaudionr = 0
         self.len_img_list = 0
+        self.new_images = -2
+        self.first_photo_already_shown = 0
         self.len_vid_list = 0
         self.len_aud_list = 0
         self.list_of_img = []
@@ -229,16 +245,47 @@ class TVbox():
 
     
         list_of_files = [x for x in list_of_files if x[-9:] != "_comp.jpg"]
-        if self.len_img_list != len(list_of_files):
-            #new image arrived, show it
-            self.showimagenr = 0
-        self.len_img_list = len(list_of_files)
-        
+        if self.len_img_list != len(list_of_files) and self.new_images != -2 :
+            #New images have arived, show the first ones as determined in the config
+            print("Showing the newly-arrived images")
+            sys.stdout.flush()
+            self.new_images =  len(list_of_files) - self.len_img_list
+            self.list_of_img = list_of_files
+            if self.first_photo_already_shown == 0 :
+                print("Reset showimagenr only the first time we're in this loop of new photo's")
+                sys.stdout.flush()
+                self.showimagenr = 0
+                self.first_photo_already_shown = 1
+            if self.new_images == self.showimagenr or self.showimagenr == MAX_JPG :
+                #When all new images have been shown or if we're at the maximum, 
+                #get out of this condition and prepair to detect for a new load
+                print("all new images have been shown")
+                sys.stdout.flush()
+                self.len_img_list = len(list_of_files)
+                self.new_images = -1 
+                self.first_photo_already_shown = 0
+        elif self.new_images == -2 :
+            #if here, it's because the pi was booted for the first time
+            print ("Detected the first boot")
+            sys.stdout.flush()
+            self.list_of_img = list_of_files
+            self.len_img_list = len(list_of_files)
+
         if self.most_recent_mode():
+            #print (self.most_recent_mode)
+            print ("we're in recent mode")
+            sys.stdout.flush()
             self.list_of_img = list_of_files[:MAX_JPG]
+        elif (RANDOMIZE_PHOTOS == True) :
+            #do not rebuild the list of images while in random mode
+            print ("not rebuilding the list while in random mode to prevent re-randomization")
+            sys.stdout.flush()
+            self.list_of_img =  self.list_of_img
         else:
             self.list_of_img = list_of_files
+            print ("not in recent mode and not in random mode - use the  sorted list")
         #print (self.list_of_img)
+        #sys.stdout.flush()
 
     def listvideos(self):
         """
@@ -317,6 +364,13 @@ class TVbox():
         if self.currentimage != self.showimagenr:
             # we regenerate list of images to have latest present
             self.listimages()
+            # Only consider shuffling if there are no new images to be shown
+            if self.showimagenr  > self.new_images and self.new_images < 0 and RANDOMIZE_PHOTOS == True : 
+                 shuffle(self.list_of_img)
+                 self.new_images = 0
+                 self.showimagenr = 0
+                 print ("Shuffled the list, new_images is now ", self.new_images)
+                 sys.stdout.flush()
             # now show the next image
             if len(self.list_of_img) == 0 :
                 #no images yet, show dummy
@@ -340,9 +394,12 @@ class TVbox():
                 self.img_day = ''
 
     def showPIL(self, image_file):
-        pilImage = Image.open(image_file)
+        Pic = Image.open(image_file)
+        pilImage = self.image_transpose_exif(Pic)
+        #pilImage.save(os.path.join(BASE_PIC_PATH,"transformed.jpg"))
         imgWidth, imgHeight = pilImage.size
         print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
+        sys.stdout.flush()
         # too large or too small, scale to fit the frame
         ratio = min(self.w/imgWidth, (self.h-self.h_label)/imgHeight)
         imgWidth = int(imgWidth*ratio)
@@ -352,6 +409,39 @@ class TVbox():
         imagesprite = self.canvas.create_image(self.w/2, 
                                                (self.h-self.h_label)/2, 
                                                image=self.image)
+
+    def image_transpose_exif(self, im):
+        """
+            Apply Image.transpose to ensure 0th row of pixels is at the visual
+            top of the image, and 0th column is the visual left-hand side.
+            Return the original image if unable to determine the orientation.
+            As per CIPA DC-008-2012, the orientation field contains an integer,
+            1 through 8. Other values are reserved.
+            Thanks to Roman Odaisky and others:
+            https://stackoverflow.com/questions/4228530/pil-thumbnail-is-rotating-my-image/
+        """
+        exif_orientation_tag = 0x0112
+        exif_transpose_sequences = [                   # Val  0th row  0th col
+            [],                                        #  0    (reserved)
+            [],                                        #  1   top      left
+            [Image.FLIP_LEFT_RIGHT],                   #  2   top      right
+            [Image.ROTATE_180],                        #  3   bottom   right
+            [Image.FLIP_TOP_BOTTOM],                   #  4   bottom   left
+            [Image.FLIP_LEFT_RIGHT, Image.ROTATE_90],  #  5   left     top
+            [Image.ROTATE_270],                        #  6   right    top
+            [Image.FLIP_TOP_BOTTOM, Image.ROTATE_90],  #  7   right    bottom
+            [Image.ROTATE_90],                         #  8   left     bottom
+        ]
+
+        try:
+            seq = exif_transpose_sequences[im._getexif()[exif_orientation_tag]]
+        except Exception:
+            return im
+        else:
+            print("Succesfully read exif data")
+            sys.stdout.flush()
+            return functools.reduce(type(im).transpose, seq, im)
+
 
     def showvideo(self):
         if self.currentvideo != self.showvideonr:

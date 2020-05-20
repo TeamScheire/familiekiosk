@@ -1,5 +1,7 @@
 *.pyc
 .spyderproject
 .directory
-src/pics/*jpg
+src/config.py
+src/chatlist.ini
+src/pics/*.*
 

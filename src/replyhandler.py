@@ -15,6 +15,7 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
     configparser = ConfigParser
 else:
     import configparser
+    ConfigParser = configparser
 
 BASE_FILE_PATH = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])),
                               'pics', 'reply')
@@ -35,7 +36,7 @@ def listreplies():
     list_of_files = sorted( glob.iglob(REPLIES), key=os.path.getctime, reverse=False)
     return list_of_files
 
-def do_reply(bot, job):
+def do_reply(job):
     """The reply job. This runs every 120 sec and checks if a reply should 
         be posted on a picture
        Added to the jobqueue when chatbot starts

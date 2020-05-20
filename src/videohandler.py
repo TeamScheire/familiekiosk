@@ -13,6 +13,7 @@ if sys.version_info[0] == 2:  # the configparser library changed it's name from 
     configparser = ConfigParser
 else:
     import configparser
+    ConfigParser = configparser
     
 from telegram.ext import MessageHandler
 from telegram.ext import CommandHandler
@@ -79,7 +80,7 @@ class VideoExtended():
             meta.set('message', 'chat_title', '')
         
         # Writing our configuration file
-        with open(meta_info_filename, 'wb') as metafile:
+        with open(meta_info_filename, 'w') as metafile:
             meta.write(metafile)
 
     def send(self):
@@ -95,7 +96,7 @@ class VideoExtended():
         #self.remove()
 
 @run_async
-def on_video_note_received(bot, update):
+def on_video_note_received(update, args):
     logger.info("video_note received")
     
     if update and update.message:
