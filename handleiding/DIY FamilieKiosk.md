@@ -99,6 +99,12 @@ of om de tvbox te herstarten:
 
     sudo service fk_tvbox start
 
+Indien de tvbox niet automatisch start, zorg dan dat de Raspberry maar opstart na netwerkverbinding. Doe hiervoor:
+
+    sudo raspi-config
+    Select Option 3 (Boot Options).
+    Select B2 (Wait for Network at Boot)
+
 ## Constructie van de FamilieKiosk-doos
 
 De familiekiosk kan optioneel uitgebreid worden met drukknoppen en een buzzer. We voorzien code voor drukknop om vorige multimedia opnieuw te zien, om naar volgende multimedia te gaan, en om een antwoord/reactie te geven. Audio en video worden enkel voor een vast slot per dag getoond. De buzzer wordt gebruikt om aan te duiden dat dit slot start.
