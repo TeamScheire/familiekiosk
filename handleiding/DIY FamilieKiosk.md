@@ -20,9 +20,17 @@ Vooraleer je de familiekiosk zelf kan installeren moet je een aantal ondersteune
 
 ![Raspbian Terminal Icoon](img/Raspbian-terminal-icoon.png)
 
-Druk de commando's gegeven als `commando` om de nodige software te installeren. Eerst controleren we of python3 de standaard is. Voer commando uit: `python --version`. Indien het resultaat niet python 3.x versie is, maar python 2.x, dien je te switchen naar python3 via handleiding op [aspberry-valley](https://raspberry-valley.azurewebsites.net/Python-Default-Version/#switching-default-python-versions), op mei 2020 is het juiste commando:
+Druk de commando's gegeven als `commando` om de nodige software te installeren. Eerst controleren we of python3 de standaard is. Voer commando uit: `python --version`. Indien het resultaat niet python 3.x versie is, maar python 2.x, dien je te switchen naar python3 via handleiding op [raspberry-valley](https://raspberry-valley.azurewebsites.net/Python-Default-Version/#switching-default-python-versions), op mei 2020 is het juiste commando:
 
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 3
+    python --version
+    python3 --version
+
+noteer de versies die je hebt op de rasp, en voeg die toe aan de alternatieven (vervang XXX door je versienummer):
+
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.XXX
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.XXX
+
+De laatste die je toevoegt is de default versie van python. Test met `python --version`.
 
 Hierna kun je de nodige software installeren
 
