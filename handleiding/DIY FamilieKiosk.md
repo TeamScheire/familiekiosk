@@ -7,9 +7,8 @@ We gebruiken een Raspberry Pi 3B, welkje je bv in pakket kunt kopen bij [Vellema
 
 Zo'n pakket komt met een lege microSD kaart, welke we moeten voorbereiden. We installeren er een linux OS op, zie de [software guide](https://www.raspberrypi.org/learning/software-guide/) voor meer info. Download de linux OS Raspbian als een `.iso` of `.zip` bestand vanaf de [download pagina Raspbian](https://www.raspberrypi.org/downloads/raspbian/). De zip dien je de extraheren met een moderne unzipper. De FamilieKiosk is gestest met
 
-* 2018-04-18-raspbian-stretch.zip
-* 2018-10-09-raspbian-stretch.zip
 * 2018-11-13-raspbian-stretch-full.zip
+* 2020-05 raspbian
 
 Download nu `Etcher` voor jouw PC van [etcher.io/](https://etcher.io/). Als gedownload, installeer het, en start Etcher. Selecteer de Raspbian .iso die je gedownload hebt in Etcher, selecteer de microSD kaart als drager, en druk op `Flash`. Wacht tot het gedaan is, en je hebt nu je harde schijf voor je Raspberry Pi klaar.
 
@@ -21,7 +20,11 @@ Vooraleer je de familiekiosk zelf kan installeren moet je een aantal ondersteune
 
 ![Raspbian Terminal Icoon](img/Raspbian-terminal-icoon.png)
 
-Druk de commando's gegeven als `commando` om de nodige software te installeren:
+Druk de commando's gegeven als `commando` om de nodige software te installeren. Eerst controleren we of python3 de standaard is. Voer commando uit: `python --version`. Indien het resultaat niet python 3.x versie is, maar python 2.x, dien je te switchen naar python3 via handleiding op [aspberry-valley](https://raspberry-valley.azurewebsites.net/Python-Default-Version/#switching-default-python-versions), op mei 2020 is het juiste commando:
+
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 3
+
+Hierna kun je de nodige software installeren
 
 1. Beeldverwerking: `sudo apt-get install python-imaging-tk`
 2. Button en buzzer support: `sudo apt-get install python-rpi.gpio python3-rpi.gpio`
