@@ -3,6 +3,11 @@
 
 from __future__ import division, print_function
 
+import os
+import sys
+
+import pexpect   # sudo apt-get install python-pexpect
+
 if os.path.isfile("config.py"):
     from config import *
 else:
@@ -21,10 +26,6 @@ STATE_AUD = 2
 TEST_RECENT_MODE =  False # if true, always in alarm mode
 TEST_VID = False # show video's to test if video playback works
 
-import os
-import sys
-
-import pexpect   # sudo apt-get install python-pexpect
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
     import Tkinter
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
