@@ -409,11 +409,27 @@ class TVbox():
            BackgroundImgHeight = int((BackgroundImgWidth / imgRatio))
            pilBackgroundImage = pilImage.resize((BackgroundImgWidth, BackgroundImgHeight), Image.ANTIALIAS)  
 
-        else: 
+        elif imgHeight < self.h: 
            imgRatio = imgWidth / imgHeight 
            BackgroundImgHeight = int(self.h * 1.5)
            BackgroundImgWidth = int(imgRatio * BackgroundImgHeight)
            pilBackgroundImage = pilImage.resize((BackgroundImgWidth, BackgroundImgHeight), Image.ANTIALIAS)
+
+        else:
+           # The photo is equal or bigger than the screen, so scale it to that screen
+           
+           imgRatio = imgWidth / imgHeight
+           BackgroundImgWidth = int(self.w * 1.5) # Blow that photo up, nicer effect
+           BackgroundImgHeight = int((BackgroundImgWidth / imgRatio))
+
+           if BackgroundImgHeight < self.h: # We scaled using the wrong parameter
+              BackgroundImgHeight = int(self.h * 1.5)
+              BackgroundImgWidth = int(imgRatio * BackgroundImgHeight)
+
+           pilBackgroundImage = pilImage.resize((BackgroundImgWidth, BackgroundImgHeight), Image.ANTIALIAS)
+           
+        print("Backround_w, h:", BackgroundImgWidth, BackgroundImgHeight)
+        sys.stdout.flush()
 
         # Blur and darken the background photo
         pilBackgroundImage = pilBackgroundImage.filter(ImageFilter.GaussianBlur(radius = 5))
