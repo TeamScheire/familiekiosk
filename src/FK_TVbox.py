@@ -434,7 +434,7 @@ class TVbox():
         # Blur and darken the background photo
         pilBackgroundImage = pilBackgroundImage.filter(ImageFilter.GaussianBlur(radius = 5))
         enhancer = ImageEnhance.Brightness(pilBackgroundImage)
-        pilBackgroundImage = enhancer.enhance(0.25) # lower than 1 darkens the image
+        pilBackgroundImage = enhancer.enhance(0.5) # lower than 1 darkens the image
 
         # Generate the true in-focus picture 
         # too large or too small, scale to fit the frame
