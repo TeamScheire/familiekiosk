@@ -42,7 +42,7 @@ else:
     import configparser
     ConfigParser = configparser
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageEnhance, ImageFilter  
 import functools
 import time
 from datetime import datetime
@@ -401,11 +401,55 @@ class TVbox():
         imgWidth, imgHeight = pilImage.size
         print ('SHOWING', image_file, imgWidth, imgHeight, self.w, self.h-self.h_label)
         sys.stdout.flush()
+
+        # Generate the background
+        if imgWidth < self.w : # Our image is smaller then the screen
+           imgRatio = imgWidth / imgHeight # Keep the original image ratio
+           BackgroundImgWidth = int(self.w * 1.5) # Blow that photo up, nicer effect
+           BackgroundImgHeight = int((BackgroundImgWidth / imgRatio))
+           pilBackgroundImage = pilImage.resize((BackgroundImgWidth, BackgroundImgHeight), Image.ANTIALIAS)  
+
+        elif imgHeight < self.h: 
+           imgRatio = imgWidth / imgHeight 
+           BackgroundImgHeight = int(self.h * 1.5)
+           BackgroundImgWidth = int(imgRatio * BackgroundImgHeight)
+           pilBackgroundImage = pilImage.resize((BackgroundImgWidth, BackgroundImgHeight), Image.ANTIALIAS)
+
+        else:
+           # The photo is equal or bigger than the screen, so scale it to that screen
+           
+           imgRatio = imgWidth / imgHeight
+           BackgroundImgWidth = int(self.w * 1.5) # Blow that photo up, nicer effect
+           BackgroundImgHeight = int((BackgroundImgWidth / imgRatio))
+
+           if BackgroundImgHeight < self.h: # We scaled using the wrong parameter
+              BackgroundImgHeight = int(self.h * 1.5)
+              BackgroundImgWidth = int(imgRatio * BackgroundImgHeight)
+
+           pilBackgroundImage = pilImage.resize((BackgroundImgWidth, BackgroundImgHeight), Image.ANTIALIAS)
+           
+        print("Backround_w, h:", BackgroundImgWidth, BackgroundImgHeight)
+        sys.stdout.flush()
+
+        # Blur and darken the background photo
+        pilBackgroundImage = pilBackgroundImage.filter(ImageFilter.GaussianBlur(radius = 5))
+        enhancer = ImageEnhance.Brightness(pilBackgroundImage)
+        pilBackgroundImage = enhancer.enhance(0.5) # lower than 1 darkens the image
+
+        # Generate the true in-focus picture 
         # too large or too small, scale to fit the frame
         ratio = min(self.w/imgWidth, (self.h-self.h_label)/imgHeight)
         imgWidth = int(imgWidth*ratio)
         imgHeight = int(imgHeight*ratio)
-        pilImage = pilImage.resize((imgWidth, imgHeight), Image.ANTIALIAS)
+        pilForgroundImage = pilImage.resize((imgWidth, imgHeight), Image.ANTIALIAS)
+
+        # Paste the Forground on top of the background
+        # test:
+        # pilImage = pilBackgroundImage
+        offset = ((BackgroundImgWidth - imgWidth) // 2, (BackgroundImgHeight - imgHeight) // 2)
+        pilBackgroundImage.paste(pilForgroundImage, offset)
+        
+        pilImage = pilBackgroundImage
         self.image = ImageTk.PhotoImage(pilImage)
         imagesprite = self.canvas.create_image(self.w/2, 
                                                (self.h-self.h_label)/2, 
