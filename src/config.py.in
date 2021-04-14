@@ -49,6 +49,7 @@ BUZZER_PRESENT = True
 BUZZER_PIN = 24
 
 USE_EXTERNAL_VIDEO_PLAYER = True
+# older RPi on older Raspberry Pi OS need extra gpu_mem !
 # add to /boot/config.txt   https://raspberrypi.stackexchange.com/questions/7716/omxplayer-doesnt-play-audio
 # # sufficient gpu to run omxplayer
 # gpu_mem=128
