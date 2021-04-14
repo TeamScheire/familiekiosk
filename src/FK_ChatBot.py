@@ -28,7 +28,7 @@ else:
     import configparser
     ConfigParser = configparser
     
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Job, BaseFilter)
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Job, MessageFilter)
 import logging
 
 if os.path.isfile("config.py"):
@@ -116,7 +116,7 @@ def error(bot, update):
     logger.warning('Update "%s" caused error "%s"', update, update.error)
 
 
-class FilterApprovedChat(BaseFilter):
+class FilterApprovedChat(MessageFilter):
     def filter(self, message):
         return message.chat.id in APPROVED_CHATS
 
