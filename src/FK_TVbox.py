@@ -164,7 +164,7 @@ class TVbox():
         
         # add gstreamer now in it's own canvas
         
-        GObject.threads_init()
+        #GObject.threads_init()
         Gst.init(None)
         
         # you can also use display_frame = tkinter.Frame(window)
