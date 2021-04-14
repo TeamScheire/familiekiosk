@@ -6,6 +6,7 @@
  Type=idle
  Environment="DISPLAY=:0"
  Environment="XAUTHORITY=/home/pi/.Xauthority"
+ WorkingDirectory=/home/pi/familiekiosk/src
  ExecStart=/usr/bin/python /home/pi/familiekiosk/src/FK_ChatBot.py > /home/pi/familiekiosk/output_chatbot.log 2>&1
 
 [Install]
