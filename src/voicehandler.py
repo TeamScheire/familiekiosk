@@ -88,7 +88,6 @@ class VoiceExtended():
         self.send()
         #self.remove()
 
-@run_async
 def on_voice_received(update, args):
     logger.info("voice received")
     

@@ -163,7 +163,6 @@ def get_quality_level(args):
 
     return quality_level
 
-@run_async
 def on_photo_received(update, args):
     logger.info("photo received")
 

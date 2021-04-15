@@ -19,7 +19,7 @@ bot.
 
 from __future__ import division, print_function
 
-import sys, os.path
+import sys, os.path, time
 
 if sys.version_info[0] == 2:  # the configparser library changed it's name from Python 2 to 3.
     import ConfigParser
@@ -28,6 +28,7 @@ else:
     import configparser
     ConfigParser = configparser
     
+import telegram
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Job, MessageFilter)
 import logging
 
@@ -123,7 +124,7 @@ class FilterApprovedChat(MessageFilter):
 # Remember to initialize the class.
 filter_approved_chats = FilterApprovedChat()
 
-def main():
+def main(disp=None):
     """Start the bot."""
     # Obtain approved chats
     global APPROVED_CHATS
@@ -138,28 +139,34 @@ def main():
         APPROVED_CHATS = [int(x) for x in chat_ids if x]
             
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(TOKEN, use_context=True)
+    if disp:
+        updater = Updater(TOKEN, use_context=True, workers=None,
+                          dispatcher=disp)
+    else:
+        updater = Updater(TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(CommandHandler("secret", secret, pass_args=True))
-    
-    # For testing: on noncommand i.e message - echo the message on Telegram
-    # dp.add_handler(MessageHandler(Filters.all, echo))
+    if disp is None:
+        # on different commands - answer in Telegram
+        dp.add_handler(CommandHandler("start", start))
+        dp.add_handler(CommandHandler("help", help))
+        dp.add_handler(CommandHandler("secret", secret, pass_args=True))
+        
+        # For testing: on noncommand i.e message - echo the message on Telegram
+        # dp.add_handler(MessageHandler(Filters.all, echo))
 
-    # we react on receiving a picture
-    dp.add_handler(MessageHandler(Filters.photo & filter_approved_chats, picturehandler.on_photo_received))
-    # we react on receiving an voice message
-    dp.add_handler(MessageHandler(Filters.voice & filter_approved_chats, voicehandler.on_voice_received))
-    dp.add_handler(MessageHandler(Filters.video_note & filter_approved_chats, videohandler.on_video_note_received))
-    dp.add_handler(MessageHandler(Filters.video & filter_approved_chats, videohandler.on_video_received))
+        # we react on receiving a picture
+        dp.add_handler(MessageHandler(Filters.photo & filter_approved_chats, picturehandler.on_photo_received, run_async=True))
+        # we react on receiving a voice message
+        dp.add_handler(MessageHandler(Filters.voice & filter_approved_chats, voicehandler.on_voice_received, run_async=True))
+        # we react on video message
+        dp.add_handler(MessageHandler(Filters.video_note & filter_approved_chats, videohandler.on_video_note_received, run_async=True))
+        dp.add_handler(MessageHandler(Filters.video & filter_approved_chats, videohandler.on_video_received, run_async=True))
 
-    # catchall if not approved user
-    dp.add_handler(MessageHandler(Filters.photo | Filters.voice | Filters.video_note | Filters.video, not_authorized))
+        # catchall if not approved user
+        dp.add_handler(MessageHandler(Filters.photo | Filters.voice | Filters.video_note | Filters.video, not_authorized))
     
     # Get the job queue to shedule jobs, see doc at
     # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-JobQueue
@@ -170,6 +177,10 @@ def main():
 
     # log all errors
     dp.add_error_handler(error)
+    
+    return updater
+
+def run_chatbot(updater):
 
     # Start the Bot
     updater.start_polling(poll_interval=5, timeout=10)
@@ -184,5 +195,13 @@ def main():
 
 
 if __name__ == '__main__':
-    #some blabla to update chmod
-    main()
+    disp = None
+    while True:
+        upd = main(disp)
+        try:
+            run_chatbot(upd)
+        except telegram.error.NetworkError as neterror:
+            disp = upd.dispatcher
+            upd.stop()
+            print ('network error', neterror, '\nMake a good Network connection!\nSleeping for 1 min')
+        time.sleep(60)

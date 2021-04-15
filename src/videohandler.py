@@ -95,15 +95,13 @@ class VideoExtended():
         self.send()
         #self.remove()
 
-@run_async
-def on_video_note_received(update, args):
+def on_video_note_received(update, context):
     logger.info("video_note received")
     
     if update and update.message:
         VideoExtended(update.message).download_send()
-        
-@run_async
-def on_video_received(bot, update):
+
+def on_video_received(update, context):
     logger.info("video received")
     
     if update and update.message:
